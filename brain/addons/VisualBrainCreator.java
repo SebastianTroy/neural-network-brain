@@ -28,7 +28,10 @@ public class VisualBrainCreator extends RenderableObject
 		private final int TYPE_SENSOR = 0;
 		private final int TYPE_NEURON = 1;
 		private final int TYPE_EFFECTOR = 2;
-		private ArrayList<Node> nodes = new ArrayList<Node>();
+		// private ArrayList<Node> nodes = new ArrayList<Node>();
+		private ArrayList<Node> nerveNodes = new ArrayList<Node>();
+		private ArrayList<Node> effectorNodes = new ArrayList<Node>();
+		private ArrayList<Node> sensorNodes = new ArrayList<Node>();
 
 		private int mouseX = 0;
 		private int mouseY = 0;
@@ -62,55 +65,37 @@ public class VisualBrainCreator extends RenderableObject
 			{
 				if (placeNode)
 					{
-						nodes.add(new Node(TYPE_NEURON, mouseX, mouseY));
-
-						for (int i = 0, num = 0; i < nodes.size(); i++)
-							{
-								if (nodes.get(i).type == TYPE_NEURON)
-									{
-										nodes.get(i).setID(num);
-										num++;
-									}
-							}
-
+						nerveNodes.add(new Node(TYPE_NEURON, mouseX, mouseY));
 						placeNode = false;
 					}
 				if (removeNode)
 					{
-						if (selectedNode.type == TYPE_NEURON && selectedNode.ID != 0)
+						if (nerveNodes.contains(selectedNode) && nerveNodes.size() > 1)
 							{
-								for (Node n : nodes)
+								for (Node n : sensorNodes)
 									{
 										n.connections.remove(selectedNode);
 									}
-								if (selectedNode.type == TYPE_NEURON)
-									nodes.remove(selectedNode);
-								selectedNode = new Node(TYPE_NEURON, 0, 0);
-
-								int numNeurons = 0;
-								for (Node n : nodes)
-									if (n.type == TYPE_NEURON)
-										numNeurons++;
-
-								if (numNeurons == 0)
-									nodes.add(new Node(TYPE_NEURON, 400, 300));
-
-								for (int i = 0, num = 0; i < nodes.size(); i++)
+								for (Node n : nerveNodes)
 									{
-										if (nodes.get(i).type == TYPE_NEURON)
-											{
-												nodes.get(i).setID(num);
-												num++;
-											}
+										n.connections.remove(selectedNode);
 									}
+								for (Node n : effectorNodes)
+									{
+										n.connections.remove(selectedNode);
+									}
+
+								nerveNodes.remove(selectedNode);
+
+								selectedNode = new Node(TYPE_NEURON, 0, 0);
 							}
 
 						removeNode = false;
 					}
 				if (connectNode)
 					{
-						if (nodes.contains(selectedNode) && nodes.contains(secondNode) && selectedNode != secondNode && secondNode.type != TYPE_SENSOR
-								&& !selectedNode.connections.contains(secondNode))
+						if ((sensorNodes.contains(selectedNode) || nerveNodes.contains(selectedNode)
+								&& (nerveNodes.contains(secondNode) || effectorNodes.contains(secondNode))))
 							{
 								selectedNode.connections.add(secondNode);
 							}
@@ -121,7 +106,7 @@ public class VisualBrainCreator extends RenderableObject
 					{
 						if (mouseX < 3 || mouseY < 3 || mouseX > 777 || mouseY > 556)
 							{
-								if (selectedNode.type == TYPE_NEURON && selectedNode.ID != 0)
+								if (nerveNodes.size() > 1 && nerveNodes.contains(selectedNode))
 									removeNode = true;
 								else
 									return;
@@ -133,7 +118,15 @@ public class VisualBrainCreator extends RenderableObject
 					}
 				if (clearConnections)
 					{
-						for (Node n : nodes)
+						for (Node n : sensorNodes)
+							{
+								n.connections.remove(selectedNode);
+							}
+						for (Node n : nerveNodes)
+							{
+								n.connections.remove(selectedNode);
+							}
+						for (Node n : effectorNodes)
 							{
 								n.connections.remove(selectedNode);
 							}
@@ -175,45 +168,58 @@ public class VisualBrainCreator extends RenderableObject
 						g.setColor(Color.RED);
 						g.drawString("Effectors Attached", 4, 556);
 
-						for (Node node : nodes)
+						int i = 0;
+						for (Node n : sensorNodes)
 							{
-								if (node.selected)
+								if (n.selected)
 									{
 										g.setColor(Color.WHITE);
-										g.fillOval(node.x - 7, node.y - 7, 14, 14);
+										g.fillOval(n.x - 7, n.y - 7, 14, 14);
 									}
-								switch (node.type)
+								g.setColor(Color.YELLOW);
+								g.fillOval(n.x - 6, n.y - 6, 12, 12);
+
+								g.setColor(Color.BLACK);
+								g.drawString("" + i++, n.x - 3, n.y + 5);
+							}
+						i = 0;
+						for (Node n : nerveNodes)
+							{
+								if (n.selected)
 									{
-									case (TYPE_SENSOR):
-										g.setColor(Color.YELLOW);
-										g.fillOval(node.x - 6, node.y - 6, 12, 12);
-
-										g.setColor(Color.BLACK);
-										g.drawString("" + node.ID, node.x - 3, node.y + 5);
-
-										break;
-									case (TYPE_NEURON):
-										g.setColor(Color.BLUE);
-										g.fillOval(node.x - 6, node.y - 6, 12, 12);
-
-										if (node.ID == 0)
-											{
-												g.setColor(Color.BLACK);
-												g.drawString("" + node.ID, node.x - 3, node.y + 5);
-											}
-										break;
-									case (TYPE_EFFECTOR):
-										g.setColor(Color.RED);
-										g.fillOval(node.x - 6, node.y - 6, 12, 12);
-
 										g.setColor(Color.WHITE);
-										g.drawString("" + node.ID, node.x - 3, node.y + 5);
-										break;
+										g.fillOval(n.x - 7, n.y - 7, 14, 14);
 									}
+
+								g.setColor(Color.BLUE);
+								g.fillOval(n.x - 6, n.y - 6, 12, 12);
+
+								g.setColor(Color.WHITE);
+								g.drawString("" + i++, n.x - 3, n.y + 5);
+							}
+						i = 0;
+						for (Node n : effectorNodes)
+							{
+								if (n.selected)
+									{
+										g.setColor(Color.WHITE);
+										g.fillOval(n.x - 7, n.y - 7, 14, 14);
+									}
+								g.setColor(Color.RED);
+								g.fillOval(n.x - 6, n.y - 6, 12, 12);
+
+								g.setColor(Color.WHITE);
+								g.drawString("" + i++, n.x - 3, n.y + 5);
 							}
 
 						g.setColor(Color.GREEN);
-						for (Node node : nodes)
+						for (Node node : sensorNodes)
+							for (Node connection : node.connections)
+								Tools.drawArrow(node.x, node.y, connection.x, connection.y, g, 15);
+						for (Node node : nerveNodes)
+							for (Node connection : node.connections)
+								Tools.drawArrow(node.x, node.y, connection.x, connection.y, g, 15);
+						for (Node node : effectorNodes)
 							for (Node connection : node.connections)
 								Tools.drawArrow(node.x, node.y, connection.x, connection.y, g, 15);
 					}
@@ -221,55 +227,78 @@ public class VisualBrainCreator extends RenderableObject
 
 		public final void newBrain(Sensor[] sensors, Effector[] effectors)
 			{
-				nodes.clear();
+				sensorNodes.clear();
+				nerveNodes.clear();
+				effectorNodes.clear();
 
 				this.sensors = sensors;
 				this.effectors = effectors;
 
-				nodes.add(new Node(TYPE_NEURON, 400, 300));
+				nerveNodes.add(new Node(TYPE_NEURON, 400, 300));
 
 				for (int s = 0, num = 0; s < sensors.length; s++, num++)
 					{
-						nodes.add(new Node(TYPE_SENSOR, 25 + (s * (750 / sensors.length)) + Tools.randInt(0, 7), Tools.randInt(18, 58)));
-						nodes.get(s).setID(num);
+						sensorNodes.add(new Node(TYPE_SENSOR, 25 + (s * (750 / sensors.length)) + Tools.randInt(0, 7), Tools.randInt(18, 58)));
 					}
 				for (int e = 0, num = 0; e < effectors.length; e++, num++)
 					{
-						nodes.add(new Node(TYPE_EFFECTOR, 25 + (e * (750 / effectors.length)) + Tools.randInt(0, 7), Tools.randInt(492, 532)));
-						nodes.get(e + sensors.length).setID(num);
+						effectorNodes.add(new Node(TYPE_EFFECTOR, 25 + (e * (750 / effectors.length)) + Tools.randInt(0, 7), Tools.randInt(492, 532)));
 					}
-				nodes.get(0).setID(0);
 			}
 
 		public final Brain generateBrain()
 			{
-				Brain brain = new Brain(1);
-
-				Neuron[] neurons = new Neuron[nodes.size()];
-				Triggerable[][] connections = new Triggerable[nodes.size()][];
-
-				for (int i = 0; i < nodes.size(); i++)
+				Node[] nodes = new Node[sensorNodes.size() + nerveNodes.size() + effectorNodes.size()];
+				int nodeNum = 0;
+				for (Node n : sensorNodes)
 					{
-						neurons[i] = new Neuron(brain, 1, 1.5);
-
-						connections[i] = new Triggerable[nodes.get(i).connections.size()];
-						for (int j = 0; j < nodes.get(i).connections.size(); j++)
-							{
-								switch (nodes.get(i).connections.get(j).type)
-									{
-									case TYPE_NEURON:
-										connections[i][j] = effectors[nodes.get(i).ID];
-										break;
-									case TYPE_EFFECTOR:
-										connections[i][j] = effectors[nodes.get(i).ID];
-										break;
-									}
-							}
+						nodes[nodeNum] = n;
+						nodeNum++;
+					}
+				for (Node n : nerveNodes)
+					{
+						nodes[nodeNum] = n;
+						nodeNum++;
+					}
+				for (Node n : effectorNodes)
+					{
+						nodes[nodeNum] = n;
+						nodeNum++;
 					}
 
-				for (int i = 0; i <= sensors.length; i++)
+				Brain brain = new Brain(0);
+				Neuron[] neurons = new Neuron[nodes.length];
+				Triggerable[][] connections = new Triggerable[neurons.length][];
+
+				for (int i = 0; i < nodes.length; i++)
 					{
-						sensors[i].linkToNeuron(neurons[i + 1]);
+						nodes[i].neuron = new Neuron(brain, 1, 2.5);
+						neurons[i] = nodes[i].neuron;
+
+						connections[i] = new Triggerable[nodes[i].connections.size()];
+						for (int j = 0; j < nodes[i].connections.size(); j++)
+							switch (nodes[i].connections.get(j).type)
+								{
+								default:
+									System.out.println("Hello");
+								case TYPE_NEURON:
+									connections[i][j] = nodes[i].connections.get(j).neuron;
+									break;
+								case TYPE_EFFECTOR:
+									boolean foundEffector = false;
+									for (int effectorNum = 0; !foundEffector; effectorNum++)
+										if (effectorNodes.get(effectorNum) == nodes[i].connections.get(j))
+											{
+												connections[i][j] = effectors[effectorNum];
+												foundEffector = true;
+											}
+									break;
+								}
+					}
+
+				for (int i = 0; i < sensors.length; i++)
+					{
+						sensors[i].linkToNeuron(sensorNodes.get(i).neuron);
 					}
 
 				brain.createBrain(neurons, connections);
@@ -282,7 +311,23 @@ public class VisualBrainCreator extends RenderableObject
 			{
 				if (event.getButton() == MouseEvent.BUTTON1)
 					{
-						for (Node n : nodes)
+						for (Node n : sensorNodes)
+							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
+								{
+									n.selected = true;
+									selectedNode = n;
+								}
+							else
+								n.selected = false;
+						for (Node n : nerveNodes)
+							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
+								{
+									n.selected = true;
+									selectedNode = n;
+								}
+							else
+								n.selected = false;
+						for (Node n : effectorNodes)
 							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
 								{
 									n.selected = true;
@@ -298,7 +343,21 @@ public class VisualBrainCreator extends RenderableObject
 					}
 				else if (event.getButton() == MouseEvent.BUTTON3)
 					{
-						for (Node n : nodes)
+						for (Node n : sensorNodes)
+							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
+								{
+									secondNode = n;
+									if (selectedNode.type != TYPE_EFFECTOR && secondNode.type != TYPE_SENSOR)
+										connectNode = true;
+								}
+						for (Node n : nerveNodes)
+							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
+								{
+									secondNode = n;
+									if (selectedNode.type != TYPE_EFFECTOR && secondNode.type != TYPE_SENSOR)
+										connectNode = true;
+								}
+						for (Node n : effectorNodes)
 							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
 								{
 									secondNode = n;
@@ -413,8 +472,9 @@ public class VisualBrainCreator extends RenderableObject
 
 		private class Node
 			{
-				public int type, ID, x, y;
+				public int type, x, y;
 				public boolean selected = false;
+				public Neuron neuron;
 
 				public ArrayList<Node> connections = new ArrayList<Node>();
 
@@ -423,11 +483,6 @@ public class VisualBrainCreator extends RenderableObject
 						this.type = type;
 						this.x = x;
 						this.y = y;
-					}
-
-				private final void setID(int ID)
-					{
-						this.ID = ID;
 					}
 			}
 	}

@@ -1,4 +1,4 @@
-package brainApp;
+package animalSimulation;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -9,47 +9,45 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
 
-import brain.Effector;
-import brain.Sensor;
-import brain.addons.TestEffector;
-import brain.addons.TestSensor;
-
 import TroysCode.RenderableObject;
-import TroysCode.hub;
-import TroysCode.T.TButton;
-import TroysCode.T.TMenu;
 import TroysCode.T.TScrollEvent;
+import animalSimulation.animal.Organism;
 
-public class MainMenu extends RenderableObject
+public class Environment extends RenderableObject
 	{
 		private static final long serialVersionUID = 1L;
 
-		private final TMenu mainMenu = new TMenu(0, 0, 300, 560, TMenu.VERTICAL);
-		private final TButton designBrainButton = new TButton(0, 0, "Design a Brain");
-		private final TButton testBrainButton = new TButton(0, 0, "Create a Brain");
-		
-		/* Create brain options */
-		Sensor[] sensors = {new TestSensor()};
-		Effector[] effectors = {new TestEffector()};
+		private Tile[][] environmentMap = new Tile[800][600];
 
+		Organism organism = null;
+
+		public Environment()
+			{
+				for (int x = 0; x < 800; x++)
+					for (int y = 0; y < 600; y++)
+						{
+							if (x < 3 || y < 3 || x > 777 || y > 556)
+								environmentMap[x][y] = new Tile(false);
+							else
+								environmentMap[x][y] = new Tile(true);
+						}
+			}
+		
 		@Override
 		protected void initiate()
 			{
-				addTComponent(mainMenu);
-				mainMenu.addTButton(designBrainButton, true);
-				mainMenu.addTButton(testBrainButton, true);
-
 			}
 
 		@Override
 		protected void refresh()
 			{
+
 			}
 
 		@Override
 		protected void tick(double secondsPassed)
 			{
-
+				organism.tick(secondsPassed);
 			}
 
 		@Override
@@ -57,7 +55,17 @@ public class MainMenu extends RenderableObject
 			{
 				g.setColor(Color.BLACK);
 				g.fillRect(0, 0, 800, 600);
+				g.setColor(Color.WHITE);
+				g.fillRect(3, 3, 777, 556);
 
+				g.setColor(Color.BLUE);
+				g.fillOval(organism.x - 1, organism.y - 1, 3, 3);
+			}
+
+		public final boolean isFree(int x, int y)
+			{
+				boolean bool = environmentMap[x][y].isFree();
+				return bool;
 			}
 
 		@Override
@@ -93,11 +101,7 @@ public class MainMenu extends RenderableObject
 		@Override
 		protected void actionPerformed(ActionEvent event)
 			{
-				if (event.getSource() == designBrainButton)
-					{
-						hub.creator.newBrain(sensors, effectors);
-						changeRenderableObject(hub.creator);
-					}
+
 			}
 
 		@Override
@@ -160,4 +164,39 @@ public class MainMenu extends RenderableObject
 
 			}
 
+		private class Tile
+			{
+				private Organism organism = null;
+				private boolean isFree = true;
+
+				private Tile(boolean free)
+					{
+						isFree = free;
+					}
+
+				private final boolean isFree()
+					{
+						return isFree;
+					}
+
+				private final void addOrganism(Organism organism)
+					{
+						if (isFree)
+							{
+								if (this.organism == null)
+									this.organism = organism;
+
+								isFree = false;
+							}
+					}
+
+				private final void removeOrganism()
+					{
+						if (organism != null)
+							{
+								organism = null;
+								isFree = true;
+							}
+					}
+			}
 	}

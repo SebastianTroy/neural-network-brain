@@ -40,7 +40,7 @@ public class Brain
 		public Brain(double neuronRechargeTime)
 			{
 				this.neuronRechargeTime = neuronRechargeTime;
-		
+
 			}
 
 		/**
@@ -92,7 +92,9 @@ public class Brain
 							n.activate();
 
 						if (neurons.length > 0)
-							neurons[0].trigger();
+							{
+								neurons[0].trigger();
+							}
 					}
 				else
 					{

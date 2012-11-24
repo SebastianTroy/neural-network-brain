@@ -1,7 +1,8 @@
 package TroysCode;
 
+import animalSimulation.Environment;
+import animalSimulation.MainMenu;
 import brain.addons.VisualBrainCreator;
-import brainApp.MainMenu;
 
 /**
  * The {@link hub} Class Contains the main method.
@@ -80,6 +81,7 @@ public class hub
 		 */
 		public static final MainMenu menu = new MainMenu();
 		public static final VisualBrainCreator creator = new VisualBrainCreator();
+		public static final Environment environment = new Environment();
 
 		/**
 		 * The main method, the very first method to be called when the program

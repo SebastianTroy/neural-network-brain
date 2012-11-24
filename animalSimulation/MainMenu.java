@@ -1,5 +1,6 @@
-package brainApp;
+package animalSimulation;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
@@ -8,148 +9,162 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
 
+import animalSimulation.animal.Organism;
+import brain.Effector;
+import brain.Sensor;
+import brain.addons.TestEffector;
+import brain.addons.TestSensor;
+
 import TroysCode.RenderableObject;
+import TroysCode.hub;
+import TroysCode.T.TButton;
+import TroysCode.T.TMenu;
 import TroysCode.T.TScrollEvent;
 
-public class BrainTester extends RenderableObject
+public class MainMenu extends RenderableObject
 	{
 		private static final long serialVersionUID = 1L;
+
+		private final TMenu mainMenu = new TMenu(0, 0, 300, 560, TMenu.VERTICAL);
+		private final TButton designBrainButton = new TButton(0, 0, "Design a Brain");
+		private final TButton testBrainButton = new TButton(0, 0, "Test Brain");
 		
+		/* Create brain options */
+		Sensor[] sensors = {new TestSensor()};
+		Effector[] effectors = {new TestEffector()};
+
 		@Override
 		protected void initiate()
 			{
-				// TODO Auto-generated method stub
+				addTComponent(mainMenu);
+				mainMenu.addTButton(designBrainButton, true);
+				mainMenu.addTButton(testBrainButton, true);
 
 			}
 
 		@Override
 		protected void refresh()
 			{
-				// TODO Auto-generated method stub
-
 			}
 
 		@Override
 		protected void tick(double secondsPassed)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void renderObject(Graphics g)
 			{
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, 800, 600);
+
 			}
 
 		@Override
 		protected void mousePressed(MouseEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void mouseReleased(MouseEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void mouseDragged(MouseEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void mouseMoved(MouseEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void mouseWheelScrolled(MouseWheelEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void actionPerformed(ActionEvent event)
 			{
-				// TODO Auto-generated method stub
-
+				if (event.getSource() == designBrainButton)
+					{
+						hub.environment.organism = new Organism();
+						hub.creator.newBrain(hub.environment.organism.sensors, hub.environment.organism.effectors);
+						changeRenderableObject(hub.creator);
+					}
+				else if (event.getSource() == testBrainButton && hub.environment.organism != null)
+					{
+						hub.environment.organism.setBrain(hub.creator.generateBrain());
+						changeRenderableObject(hub.environment);
+					}
 			}
 
 		@Override
 		protected void keyPressed(KeyEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void keyReleased(KeyEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void keyTyped(KeyEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void mouseClicked(MouseEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void mouseEntered(MouseEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void mouseExited(MouseEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void programGainedFocus(WindowEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void programLostFocus(WindowEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		protected void frameResized(ComponentEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
 
 		@Override
 		public void tScrollBarScrolled(TScrollEvent event)
 			{
-				// TODO Auto-generated method stub
 
 			}
+
 	}

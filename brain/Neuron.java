@@ -78,17 +78,17 @@ public class Neuron implements Runnable, Triggerable
 		 *            this {@link Neuron} to trigger when it 'fires' /
 		 *            'depolorises'.
 		 */
-		public final void connectTo(Triggerable[] connections)
+		public final void connectTo(Triggerable[] newConnections)
 			{
-				ArrayList<Triggerable> tempNeuronArray = new ArrayList<Triggerable>(connections.length);
+				ArrayList<Triggerable> tempNeuronArray = new ArrayList<Triggerable>(newConnections.length);
 
-				for (Triggerable n : connections)
+				for (Triggerable n : newConnections)
 					if (n != this && !tempNeuronArray.contains(n))
 						{
 							tempNeuronArray.add(n);
 						}
 
-				connections = new Neuron[tempNeuronArray.size()];
+				connections = new Triggerable[tempNeuronArray.size()];
 				tempNeuronArray.toArray(connections);
 			}
 
@@ -118,11 +118,15 @@ public class Neuron implements Runnable, Triggerable
 			{
 				while (brain.alive)
 					{
-						if (brain.ageInSeconds - timeOfLastTrigger > triggerResetTime)
-							triggerCount = 0;
-
-						if (triggerCount > triggerThreshold)
+						if (brain.ageInSeconds - timeOfLastTrigger >= triggerResetTime)
 							{
+								triggerCount = 0;
+							}
+
+						if (triggerCount >= triggerThreshold)
+							{
+								System.out.println("Neuron Triggered: " + connections.length);
+
 								for (Triggerable n : connections)
 									n.trigger();
 
@@ -130,7 +134,10 @@ public class Neuron implements Runnable, Triggerable
 							}
 						try
 							{
-								thread.wait();
+								synchronized (thread)
+									{
+										thread.wait();
+									}
 							}
 						catch (InterruptedException e)
 							{
@@ -146,11 +153,14 @@ public class Neuron implements Runnable, Triggerable
 		@Override
 		public final void trigger()
 			{
-				if (brain.ageInSeconds - timeOfLastDepolorisation > brain.neuronRechargeTime)
+				if (brain.ageInSeconds - timeOfLastDepolorisation >= brain.neuronRechargeTime)
 					{
 						triggerCount++;
 						timeOfLastTrigger = brain.ageInSeconds;
-						thread.notify();
+						synchronized (thread)
+							{
+								thread.notify();
+							}
 					}
 			}
 	}

@@ -11,7 +11,7 @@ package brain;
  * 
  * @author Sebastian Troy
  */
-public class Sensor
+public abstract class Sensor
 	{
 		/**
 		 * The {@link Neuron} which will be triggered when this {@link Sensor}
@@ -37,4 +37,6 @@ public class Sensor
 			{
 				neuron.trigger();
 			}
+		
+		public abstract void tick(double secondsPassed);
 	}

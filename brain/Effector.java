@@ -43,4 +43,6 @@ public abstract class Effector implements Triggerable
 					}
 				return false;
 			}
+		
+		public abstract void tick(double secondsPassed);
 	}
