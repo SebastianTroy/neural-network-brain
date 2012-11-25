@@ -78,9 +78,9 @@ public class Neuron implements Runnable, Triggerable
 		 *            this {@link Neuron} to trigger when it 'fires' /
 		 *            'depolorises'.
 		 */
-		public final void connectTo(Triggerable[] newConnections)
+		public final void connectTo(ArrayList<Triggerable> newConnections)
 			{
-				ArrayList<Triggerable> tempNeuronArray = new ArrayList<Triggerable>(newConnections.length);
+				ArrayList<Triggerable> tempNeuronArray = new ArrayList<Triggerable>(newConnections.size());
 
 				for (Triggerable n : newConnections)
 					if (n != this && !tempNeuronArray.contains(n))
@@ -125,8 +125,6 @@ public class Neuron implements Runnable, Triggerable
 
 						if (triggerCount >= triggerThreshold)
 							{
-								System.out.println("Neuron Triggered: " + connections.length);
-
 								for (Triggerable n : connections)
 									n.trigger();
 

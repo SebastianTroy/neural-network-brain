@@ -6,7 +6,9 @@ import brain.Sensor;
 
 public class Whisker extends Sensor
 	{
-		Organism self;
+		private Organism self;
+		private double counter = 0;
+		private double resetSpeed = 1;
 
 		public Whisker(Organism self)
 			{
@@ -33,8 +35,12 @@ public class Whisker extends Sensor
 						x--;
 						break;
 					}
-				if (!hub.environment.isFree(x, y))
-					sensorTriggered();
+				if (counter < 0 && !hub.environment.isFree(x, y))
+					{
+						counter = resetSpeed;
+						sensorTriggered();
+					}
+				counter -= secondsPassed;
 			}
 
 	}

@@ -8,8 +8,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 
 import TroysCode.RenderableObject;
+import TroysCode.Tools;
+import TroysCode.hub;
 import TroysCode.T.TScrollEvent;
 import animalSimulation.animal.Organism;
 
@@ -17,22 +20,31 @@ public class Environment extends RenderableObject
 	{
 		private static final long serialVersionUID = 1L;
 
-		private Tile[][] environmentMap = new Tile[800][600];
+		private int width = 780;
+		private int height = 559;
+		private BufferedImage environmentMap1 = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+		private final Color EMPTY = new Color(255, 255, 255);
+		private final Color BLOCKADE = new Color(0, 0, 0);
+		private final Color FOOD = new Color(255, 0, 255);
 
 		Organism organism = null;
 
 		public Environment()
 			{
-				for (int x = 0; x < 800; x++)
-					for (int y = 0; y < 600; y++)
-						{
-							if (x < 3 || y < 3 || x > 777 || y > 556)
-								environmentMap[x][y] = new Tile(false);
-							else
-								environmentMap[x][y] = new Tile(true);
-						}
+				Graphics g = environmentMap1.getGraphics();
+				g.setColor(EMPTY);
+				g.fillRect(3, 3, width - 6, height - 6);
+				g.setColor(BLOCKADE);
+				g.fillRect(0, 0, 3, height);
+				g.fillRect(3, 0, width - 3, 3);
+				g.fillRect(width - 3, 0, 3, height);
+				g.fillRect(0, 0, 3, height);
+
+				for (int i = 0; i < 500; i++)
+					g.fillOval(Tools.randInt(-10, width + 10), Tools.randInt(-10, height + 10), Tools.randInt(1, 15), Tools.randInt(1, 15));
 			}
-		
+
 		@Override
 		protected void initiate()
 			{
@@ -53,10 +65,7 @@ public class Environment extends RenderableObject
 		@Override
 		protected void renderObject(Graphics g)
 			{
-				g.setColor(Color.BLACK);
-				g.fillRect(0, 0, 800, 600);
-				g.setColor(Color.WHITE);
-				g.fillRect(3, 3, 777, 556);
+				g.drawImage(environmentMap1, 0, 0, hub.renderer);
 
 				g.setColor(Color.BLUE);
 				g.fillOval(organism.x - 1, organism.y - 1, 3, 3);
@@ -64,8 +73,10 @@ public class Environment extends RenderableObject
 
 		public final boolean isFree(int x, int y)
 			{
-				boolean bool = environmentMap[x][y].isFree();
-				return bool;
+				if (environmentMap1.getRGB(x, y) == EMPTY.getRGB())
+					return true;
+
+				return false;
 			}
 
 		@Override
@@ -162,41 +173,5 @@ public class Environment extends RenderableObject
 		public void tScrollBarScrolled(TScrollEvent event)
 			{
 
-			}
-
-		private class Tile
-			{
-				private Organism organism = null;
-				private boolean isFree = true;
-
-				private Tile(boolean free)
-					{
-						isFree = free;
-					}
-
-				private final boolean isFree()
-					{
-						return isFree;
-					}
-
-				private final void addOrganism(Organism organism)
-					{
-						if (isFree)
-							{
-								if (this.organism == null)
-									this.organism = organism;
-
-								isFree = false;
-							}
-					}
-
-				private final void removeOrganism()
-					{
-						if (organism != null)
-							{
-								organism = null;
-								isFree = true;
-							}
-					}
 			}
 	}

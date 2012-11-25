@@ -1,5 +1,7 @@
 package brain;
 
+import java.util.ArrayList;
+
 /**
  * This class is a holding class used to hold a network of {@link Neuron}s which
  * are meant to represent a highly simplified brain. This class doesn't handle
@@ -79,14 +81,14 @@ public class Brain
 		 *            triggering should be limited by the
 		 *            {@code neuronRechargeTime}
 		 */
-		public final void createBrain(Neuron[] neurons, Triggerable[][] neuronConnections)
+		public final void createBrain(Neuron[] neurons, ArrayList<ArrayList<Triggerable>> neuronConnections)
 			{
 				this.neurons = neurons;
 
-				if (neuronConnections.length == neurons.length)
+				if (neuronConnections.size() == neurons.length)
 					{
-						for (int i = 0; i < neuronConnections.length; i++)
-							neurons[i].connectTo(neuronConnections[i]);
+						for (int i = 0; i < neuronConnections.size(); i++)
+							neurons[i].connectTo(neuronConnections.get(i));
 
 						for (Neuron n : neurons)
 							n.activate();
