@@ -39,4 +39,9 @@ public abstract class Sensor
 			}
 		
 		public abstract void tick(double secondsPassed);
+		
+		public String getDescription()
+			{
+				return "Sensor";
+			}
 	}

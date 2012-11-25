@@ -44,4 +44,10 @@ public class Tail extends Effector
 					}
 				counter -= secondsPassed;
 			}
+		
+		@Override
+		public String getDescription()
+			{
+				return "Tail";
+			}
 	}

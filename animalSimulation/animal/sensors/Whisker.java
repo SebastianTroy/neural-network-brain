@@ -42,5 +42,10 @@ public class Whisker extends Sensor
 					}
 				counter -= secondsPassed;
 			}
-
+		
+		@Override
+		public String getDescription()
+			{
+				return "Whisker";
+			}
 	}

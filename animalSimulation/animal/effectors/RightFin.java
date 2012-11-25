@@ -38,4 +38,9 @@ public class RightFin extends Effector
 				counter -= secondsPassed;
 			}
 
+		@Override
+		public String getDescription()
+			{
+				return "Right Fin";
+			}
 	}

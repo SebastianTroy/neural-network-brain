@@ -45,4 +45,9 @@ public abstract class Effector implements Triggerable
 			}
 		
 		public abstract void tick(double secondsPassed);
+		
+		public String getDescription()
+			{
+				return "Effector";
+			}
 	}

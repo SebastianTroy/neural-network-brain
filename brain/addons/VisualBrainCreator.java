@@ -28,7 +28,7 @@ public class VisualBrainCreator extends RenderableObject
 		private final int TYPE_SENSOR = 0;
 		private final int TYPE_NEURON = 1;
 		private final int TYPE_EFFECTOR = 2;
-		// private ArrayList<Node> nodes = new ArrayList<Node>();
+
 		private ArrayList<Node> neuronNodes = new ArrayList<Node>();
 		private ArrayList<Node> effectorNodes = new ArrayList<Node>();
 		private ArrayList<Node> sensorNodes = new ArrayList<Node>();
@@ -45,6 +45,7 @@ public class VisualBrainCreator extends RenderableObject
 		private Node selectedNode = new Node(TYPE_NEURON, 0, 0);
 		private Node secondNode = new Node(TYPE_NEURON, 0, 0);
 
+		private boolean showLabels = true;
 		private boolean showHelp = true;
 
 		private Sensor[] sensors;
@@ -58,6 +59,11 @@ public class VisualBrainCreator extends RenderableObject
 		@Override
 		protected void refresh()
 			{
+				for (int i = 0; i < sensors.length;i++)
+					sensorNodes.get(i).description = sensors[i].getDescription();
+				
+				for (int i = 0; i < effectors.length;i++)
+					effectorNodes.get(i).description = effectors[i].getDescription();
 			}
 
 		@Override
@@ -151,6 +157,7 @@ public class VisualBrainCreator extends RenderableObject
 						g.drawString("Right click on another Neuron to connect it to the selected Neuron.", 4, ++i * 15);
 						g.drawString("Press 'd' to delete the selected Neuron.", 4, ++i * 15);
 						g.drawString("Press 'c' to clear the selected Neuron's Connections.", 4, ++i * 15);
+						g.drawString("Press 'l' to show/hide Neuron labels.", 4, ++i * 15);
 						g.drawString("Press 'm' to go to main menu.", 4, ++i * 15);
 						g.drawString("Press 'h' to show/hide the help.", 4, ++i * 15);
 					}
@@ -181,6 +188,12 @@ public class VisualBrainCreator extends RenderableObject
 
 								g.setColor(Color.BLACK);
 								g.drawString("" + i++, n.x - 3, n.y + 5);
+
+								if (showLabels)
+									{
+										g.setColor(Color.WHITE);
+										g.drawString(n.description, n.x + 7, n.y + 5);
+									}
 							}
 						i = 0;
 						for (Node n : neuronNodes)
@@ -210,6 +223,11 @@ public class VisualBrainCreator extends RenderableObject
 
 								g.setColor(Color.WHITE);
 								g.drawString("" + i++, n.x - 3, n.y + 5);
+								if (showLabels)
+									{
+										g.drawString(n.description, n.x + 7, n.y + 5);
+									}
+
 							}
 
 						g.setColor(Color.GREEN);
@@ -277,7 +295,7 @@ public class VisualBrainCreator extends RenderableObject
 						nodes[i].neuron = new Neuron(brain, 1, 2.5);
 						neurons[i] = nodes[i].neuron;
 					}
-				
+
 				for (int i = 0; i < nodes.length; i++)
 					for (int j = 0; j < nodes[i].connections.size(); j++)
 						switch (nodes[i].connections.get(j).type)
@@ -410,6 +428,8 @@ public class VisualBrainCreator extends RenderableObject
 					removeNode = true;
 				else if (event.getKeyChar() == 'c')
 					clearConnections = true;
+				else if (event.getKeyChar() == 'l')
+					showLabels = !showLabels;
 				else if (event.getKeyChar() == 'h')
 					showHelp = !showHelp;
 				else if (event.getKeyChar() == 'm')
@@ -472,11 +492,13 @@ public class VisualBrainCreator extends RenderableObject
 
 		private class Node
 			{
-				public int type, x, y;
-				public boolean selected = false;
-				public Neuron neuron;
+				private int type, x, y;
+				private boolean selected = false;
+				private Neuron neuron;
 
-				public ArrayList<Node> connections = new ArrayList<Node>();
+				private String description = "";
+
+				private ArrayList<Node> connections = new ArrayList<Node>();
 
 				private Node(int type, int x, int y)
 					{

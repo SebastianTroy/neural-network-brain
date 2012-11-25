@@ -37,5 +37,10 @@ public class LeftFin extends Effector
 						}
 				counter -= secondsPassed;
 			}
-
+		
+		@Override
+		public String getDescription()
+			{
+				return "Left Fin";
+			}
 	}
