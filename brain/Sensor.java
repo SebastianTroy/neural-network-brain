@@ -43,7 +43,8 @@ public abstract class Sensor
 		 */
 		protected final void sensorTriggered()
 			{
-				neuron.trigger();
+				if (neuron != null)
+					neuron.trigger();
 			}
 
 		public abstract void tick(double secondsPassed);
@@ -52,7 +53,7 @@ public abstract class Sensor
 			{
 				return ID;
 			}
-		
+
 		public final void setID(Sensor parent)
 			{
 				ID = parent.ID;

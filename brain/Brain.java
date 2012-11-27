@@ -2,7 +2,6 @@ package brain;
 
 import java.util.ArrayList;
 
-import brain.addons.Node;
 import brain.addons.VisualBrainCreator;
 
 /**
@@ -34,7 +33,7 @@ public class Brain
 		 * These contain the information required to generate this brain, they
 		 * are also needed in order to create another brain based on this one.
 		 */
-		public BrainBlueprints blueprints;
+		public BrainBlueprint blueprints;
 		/**
 		 * This is the age of the {@link Brain} in seconds, it is used by the
 		 * {@link Neuron}s to keep track of the time since they last 'fired' /
@@ -66,7 +65,7 @@ public class Brain
 		public Brain(double neuronRechargeTime, Sensor[] sensors, Effector[] effectors)
 			{
 				this.neuronRechargeTime = neuronRechargeTime;
-				blueprints = new BrainBlueprints(sensors, effectors);
+				blueprints = new BrainBlueprint(sensors, effectors);
 			}
 
 		/**
@@ -98,25 +97,25 @@ public class Brain
 		 */
 		public Brain(Brain parentBrain, Sensor[] sensors, Effector[] effectors)
 			{
-				this.neuronRechargeTime = parentBrain.neuronRechargeTime;
-				blueprints = new BrainBlueprints(parentBrain.blueprints, sensors, effectors);
+				neuronRechargeTime = parentBrain.neuronRechargeTime;
+				blueprints = new BrainBlueprint(parentBrain.blueprints, sensors, effectors);
 			}
 
 		public final void generateBrain()
 			{
-				Node[] nodes = new Node[blueprints.sensorNodes.size() + blueprints.neuronNodes.size() + blueprints.effectorNodes.size()];
+				NeuronBlueprint[] nodes = new NeuronBlueprint[blueprints.sensorNodes.size() + blueprints.neuronNodes.size() + blueprints.effectorNodes.size()];
 				int nodeNum = 0;
-				for (Node n : blueprints.neuronNodes)
+				for (NeuronBlueprint n : blueprints.neuronNodes)
 					{
 						nodes[nodeNum] = n;
 						nodeNum++;
 					}
-				for (Node n : blueprints.sensorNodes)
+				for (NeuronBlueprint n : blueprints.sensorNodes)
 					{
 						nodes[nodeNum] = n;
 						nodeNum++;
 					}
-				for (Node n : blueprints.effectorNodes)
+				for (NeuronBlueprint n : blueprints.effectorNodes)
 					{
 						nodes[nodeNum] = n;
 						nodeNum++;
@@ -129,7 +128,9 @@ public class Brain
 
 				for (int i = 0; i < nodes.length; i++)
 					{
-						nodes[i].neuron = new Neuron(this, nodes[i].inhibitor, 1, 2.5);
+						// TODO make all nerve aspects heredatory (just trigger
+						// reset time to go!
+						nodes[i].neuron = new Neuron(this, nodes[i].inhibitor, nodes[i].getThreshold(), 2.5);
 						neurons[i] = nodes[i].neuron;
 					}
 
@@ -137,26 +138,38 @@ public class Brain
 					for (int j = 0; j < nodes[i].connections.size(); j++)
 						switch (nodes[i].connections.get(j).type)
 							{
-							case BrainBlueprints.TYPE_NEURON:
+							case BrainBlueprint.TYPE_NEURON:
 								connections.get(i).add(nodes[i].connections.get(j).neuron);
 								break;
-							case BrainBlueprints.TYPE_EFFECTOR:
-								boolean foundEffector = false;
-								for (int effectorNum = 0; !foundEffector; effectorNum++)
-									if (blueprints.effectorNodes.get(effectorNum) == nodes[i].connections.get(j))
-										{
-											connections.get(i).add(blueprints.getEffectors()[effectorNum]);
-											foundEffector = true;
-										}
+							case BrainBlueprint.TYPE_EFFECTOR:
+								for (Effector e : blueprints.getEffectors())
+									{
+										if (nodes[i].connections.get(j).ID == e.getID())
+											connections.get(i).add(e);
+									}
+
+//TODO remove if not needed
+//								boolean foundEffector = false;
+//								for (int effectorNum = 0; !foundEffector; effectorNum++)
+//									if (blueprints.effectorNodes.get(effectorNum) == nodes[i].connections.get(j))
+//										{
+//											connections.get(i).add(blueprints.getEffectors()[effectorNum]);
+//											foundEffector = true;
+//										}
 								break;
 							}
 
 				for (int i = 0; i < blueprints.getSensors().length; i++)
-					{
-						blueprints.getSensors()[i].linkToNeuron(blueprints.sensorNodes.get(i).neuron);
-					}
+					for (NeuronBlueprint node : blueprints.sensorNodes)
+						if (blueprints.getSensors()[i].getID() == node.ID)
+							{
+								blueprints.getSensors()[i].linkToNeuron(node.neuron);
+								break;
+							}
+						else
+							System.out.println("SENSOR NOT LINKED - generateBrain()");
 
-				createBrain(neurons, connections);
+				linkBrain(neurons, connections);
 			}
 
 		/**
@@ -179,7 +192,7 @@ public class Brain
 		 *            triggering should be limited by the
 		 *            {@code neuronRechargeTime}
 		 */
-		public final void createBrain(Neuron[] neurons, ArrayList<ArrayList<Triggerable>> neuronConnections)
+		private final void linkBrain(Neuron[] neurons, ArrayList<ArrayList<Triggerable>> neuronConnections)
 			{
 				this.neurons = neurons;
 
@@ -199,7 +212,7 @@ public class Brain
 				else
 					{
 						alive = false;
-						System.out.println("Brain::createBrain : neuron connections.length != brain.neurons.length");
+						System.out.println("Brain::linkBrain : neuron connections.length != brain.neurons.length");
 					}
 			}
 

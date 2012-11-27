@@ -103,6 +103,7 @@ public class MainMenu extends RenderableObject
 				else if (event.getSource() == testBrainButton && hub.environment.startingOrganism != null)
 					{
 						hub.environment.startingOrganism.brain.generateBrain();
+						hub.environment.prepareSimulation();
 						changeRenderableObject(hub.environment);
 					}
 			}

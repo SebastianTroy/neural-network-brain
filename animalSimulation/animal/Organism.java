@@ -55,7 +55,7 @@ public class Organism
 				effectors[2] = new Tail(this);
 				effectors[2].setID(o.effectors[2]);
 
-				this.brain = new Brain(o.brain, o.sensors, o.effectors);
+				brain = new Brain(o.brain, sensors, effectors);
 				facing = Tools.randInt(NORTH, WEST);
 			}
 
