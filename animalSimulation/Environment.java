@@ -28,7 +28,8 @@ public class Environment extends RenderableObject
 		private final Color BLOCKADE = new Color(0, 0, 0);
 		private final Color FOOD = new Color(255, 0, 255);
 
-		Organism organism = null;
+		public Organism startingOrganism = null;
+		private Organism[] population = new Organism[20];
 
 		public Environment()
 			{
@@ -53,13 +54,15 @@ public class Environment extends RenderableObject
 		@Override
 		protected void refresh()
 			{
-
+				for (int i = 0; i < population.length; i++)
+					population[i] = new Organism(startingOrganism, Tools.randInt(0, width), Tools.randInt(0, height));
 			}
 
 		@Override
 		protected void tick(double secondsPassed)
 			{
-				organism.tick(secondsPassed);
+				for (Organism organism : population)
+					organism.tick(secondsPassed);
 			}
 
 		@Override
@@ -68,7 +71,8 @@ public class Environment extends RenderableObject
 				g.drawImage(environmentMap1, 0, 0, hub.renderer);
 
 				g.setColor(Color.BLUE);
-				g.fillOval(organism.x - 1, organism.y - 1, 3, 3);
+				for (Organism o : population)
+					g.fillOval(o.x - 1, o.y - 1, 3, 3);
 			}
 
 		public final boolean isFree(int x, int y)

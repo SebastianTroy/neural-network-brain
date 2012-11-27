@@ -8,48 +8,34 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-
-import brain.Brain;
-import brain.Effector;
-import brain.Neuron;
-import brain.Sensor;
-import brain.Triggerable;
 
 import TroysCode.RenderableObject;
 import TroysCode.Tools;
 import TroysCode.hub;
 import TroysCode.T.TScrollEvent;
+import brain.BrainBlueprints;
 
 public class VisualBrainCreator extends RenderableObject
 	{
 		private static final long serialVersionUID = 1L;
 
-		private final int TYPE_SENSOR = 0;
-		private final int TYPE_NEURON = 1;
-		private final int TYPE_EFFECTOR = 2;
-
-		private ArrayList<Node> neuronNodes = new ArrayList<Node>();
-		private ArrayList<Node> effectorNodes = new ArrayList<Node>();
-		private ArrayList<Node> sensorNodes = new ArrayList<Node>();
-
 		private int mouseX = 0;
 		private int mouseY = 0;
 
 		private boolean placeNode = false;
+		private boolean placeInhibitingNode = false;
 		private boolean removeNode = false;
 		private boolean connectNode = false;
 		private boolean moveNode = false;
 		private boolean clearConnections = false;
 
-		private Node selectedNode = new Node(TYPE_NEURON, 0, 0);
-		private Node secondNode = new Node(TYPE_NEURON, 0, 0);
+		private Node selectedNode = new Node(BrainBlueprints.TYPE_NEURON, 0, 0);
+		private Node secondNode = new Node(BrainBlueprints.TYPE_NEURON, 0, 0);
 
 		private boolean showLabels = true;
 		private boolean showHelp = true;
 
-		private Sensor[] sensors;
-		private Effector[] effectors;
+		public BrainBlueprints blueprints;
 
 		@Override
 		protected void initiate()
@@ -59,11 +45,6 @@ public class VisualBrainCreator extends RenderableObject
 		@Override
 		protected void refresh()
 			{
-				for (int i = 0; i < sensors.length;i++)
-					sensorNodes.get(i).description = sensors[i].getDescription();
-				
-				for (int i = 0; i < effectors.length;i++)
-					effectorNodes.get(i).description = effectors[i].getDescription();
 			}
 
 		@Override
@@ -71,40 +52,24 @@ public class VisualBrainCreator extends RenderableObject
 			{
 				if (placeNode)
 					{
-						neuronNodes.add(new Node(TYPE_NEURON, mouseX, mouseY));
+						blueprints.addNeuronNode(new Node(BrainBlueprints.TYPE_NEURON, mouseX, mouseY), false);
 						placeNode = false;
+					}
+				if (placeInhibitingNode)
+					{
+						blueprints.addNeuronNode(new Node(BrainBlueprints.TYPE_NEURON, mouseX, mouseY), true);
+						placeInhibitingNode = false;
 					}
 				if (removeNode)
 					{
-						if (neuronNodes.contains(selectedNode) && neuronNodes.size() > 1)
-							{
-								for (Node n : sensorNodes)
-									{
-										n.connections.remove(selectedNode);
-									}
-								for (Node n : neuronNodes)
-									{
-										n.connections.remove(selectedNode);
-									}
-								for (Node n : effectorNodes)
-									{
-										n.connections.remove(selectedNode);
-									}
-
-								neuronNodes.remove(selectedNode);
-
-								selectedNode = new Node(TYPE_NEURON, 0, 0);
-							}
+						blueprints.removeNeuronNode(selectedNode);
+						selectedNode = new Node(BrainBlueprints.TYPE_NEURON, 0, 0);
 
 						removeNode = false;
 					}
 				if (connectNode)
 					{
-						if ((sensorNodes.contains(selectedNode) || neuronNodes.contains(selectedNode)
-								&& (neuronNodes.contains(secondNode) || effectorNodes.contains(secondNode))))
-							{
-								selectedNode.connections.add(secondNode);
-							}
+						blueprints.makeConnection(selectedNode, secondNode);
 
 						connectNode = false;
 					}
@@ -112,7 +77,7 @@ public class VisualBrainCreator extends RenderableObject
 					{
 						if (mouseX < 3 || mouseY < 3 || mouseX > 777 || mouseY > 556)
 							{
-								if (neuronNodes.size() > 1 && neuronNodes.contains(selectedNode))
+								if (blueprints.neuronNodes.size() > 1 && blueprints.neuronNodes.contains(selectedNode))
 									removeNode = true;
 								else
 									return;
@@ -124,19 +89,8 @@ public class VisualBrainCreator extends RenderableObject
 					}
 				if (clearConnections)
 					{
-						for (Node n : sensorNodes)
-							{
-								n.connections.remove(selectedNode);
-							}
-						for (Node n : neuronNodes)
-							{
-								n.connections.remove(selectedNode);
-							}
-						for (Node n : effectorNodes)
-							{
-								n.connections.remove(selectedNode);
-							}
-						selectedNode.connections.clear();
+						blueprints.clearConnections(selectedNode);
+						
 						clearConnections = false;
 					}
 			}
@@ -153,6 +107,8 @@ public class VisualBrainCreator extends RenderableObject
 
 						int i = 0;
 						g.setColor(Color.WHITE);
+						g.drawString("Press 'n' to add a new normal Neuron.", 4, ++i * 15);
+						g.drawString("Press 'i' to add an inhibiting Neuron.", 4, ++i * 15);
 						g.drawString("Click on a Neuron and drag to move it around (purely cosmetic!).", 4, ++i * 15);
 						g.drawString("Right click on another Neuron to connect it to the selected Neuron.", 4, ++i * 15);
 						g.drawString("Press 'd' to delete the selected Neuron.", 4, ++i * 15);
@@ -176,7 +132,7 @@ public class VisualBrainCreator extends RenderableObject
 						g.drawString("Effectors Attached", 4, 556);
 
 						int i = 0;
-						for (Node n : sensorNodes)
+						for (Node n : blueprints.sensorNodes)
 							{
 								if (n.selected)
 									{
@@ -196,7 +152,7 @@ public class VisualBrainCreator extends RenderableObject
 									}
 							}
 						i = 0;
-						for (Node n : neuronNodes)
+						for (Node n : blueprints.neuronNodes)
 							{
 								if (n.selected)
 									{
@@ -204,14 +160,17 @@ public class VisualBrainCreator extends RenderableObject
 										g.fillOval(n.x - 7, n.y - 7, 14, 14);
 									}
 
-								g.setColor(Color.BLUE);
+								if (n.inhibitor)
+									g.setColor(Color.DARK_GRAY);
+								else
+									g.setColor(Color.BLUE);
 								g.fillOval(n.x - 6, n.y - 6, 12, 12);
 
 								g.setColor(Color.WHITE);
 								g.drawString("" + i++, n.x - 3, n.y + 5);
 							}
 						i = 0;
-						for (Node n : effectorNodes)
+						for (Node n : blueprints.effectorNodes)
 							{
 								if (n.selected)
 									{
@@ -231,97 +190,21 @@ public class VisualBrainCreator extends RenderableObject
 							}
 
 						g.setColor(Color.GREEN);
-						for (Node node : sensorNodes)
+						for (Node node : blueprints.sensorNodes)
 							for (Node connection : node.connections)
 								Tools.drawArrow(node.x, node.y, connection.x, connection.y, g, 15);
-						for (Node node : neuronNodes)
+						for (Node node : blueprints.neuronNodes)
 							for (Node connection : node.connections)
 								Tools.drawArrow(node.x, node.y, connection.x, connection.y, g, 15);
-						for (Node node : effectorNodes)
+						for (Node node : blueprints.effectorNodes)
 							for (Node connection : node.connections)
 								Tools.drawArrow(node.x, node.y, connection.x, connection.y, g, 15);
 					}
 			}
-
-		public final void newBrain(Sensor[] sensors, Effector[] effectors)
+		
+		public final void setBlueprintsToEdit(BrainBlueprints blueprints)
 			{
-				sensorNodes.clear();
-				neuronNodes.clear();
-				effectorNodes.clear();
-
-				this.sensors = sensors;
-				this.effectors = effectors;
-
-				neuronNodes.add(new Node(TYPE_NEURON, 400, 300));
-
-				for (int s = 0, num = 0; s < sensors.length; s++, num++)
-					{
-						sensorNodes.add(new Node(TYPE_SENSOR, 25 + (s * (750 / sensors.length)) + Tools.randInt(0, 7), Tools.randInt(18, 58)));
-					}
-				for (int e = 0, num = 0; e < effectors.length; e++, num++)
-					{
-						effectorNodes.add(new Node(TYPE_EFFECTOR, 25 + (e * (750 / effectors.length)) + Tools.randInt(0, 7), Tools.randInt(492, 532)));
-					}
-			}
-
-		public final Brain generateBrain()
-			{
-				Node[] nodes = new Node[sensorNodes.size() + neuronNodes.size() + effectorNodes.size()];
-				int nodeNum = 0;
-				for (Node n : neuronNodes)
-					{
-						nodes[nodeNum] = n;
-						nodeNum++;
-					}
-				for (Node n : sensorNodes)
-					{
-						nodes[nodeNum] = n;
-						nodeNum++;
-					}
-				for (Node n : effectorNodes)
-					{
-						nodes[nodeNum] = n;
-						nodeNum++;
-					}
-
-				Brain brain = new Brain(0);
-				Neuron[] neurons = new Neuron[nodes.length];
-				ArrayList<ArrayList<Triggerable>> connections = new ArrayList<ArrayList<Triggerable>>(neurons.length);
-				for (int i = 0; i < neurons.length; i++)
-					connections.add(new ArrayList<Triggerable>());
-
-				for (int i = 0; i < nodes.length; i++)
-					{
-						nodes[i].neuron = new Neuron(brain, 1, 2.5);
-						neurons[i] = nodes[i].neuron;
-					}
-
-				for (int i = 0; i < nodes.length; i++)
-					for (int j = 0; j < nodes[i].connections.size(); j++)
-						switch (nodes[i].connections.get(j).type)
-							{
-							case TYPE_NEURON:
-								connections.get(i).add(nodes[i].connections.get(j).neuron);
-								break;
-							case TYPE_EFFECTOR:
-								boolean foundEffector = false;
-								for (int effectorNum = 0; !foundEffector; effectorNum++)
-									if (effectorNodes.get(effectorNum) == nodes[i].connections.get(j))
-										{
-											connections.get(i).add(effectors[effectorNum]);
-											foundEffector = true;
-										}
-								break;
-							}
-
-				for (int i = 0; i < sensors.length; i++)
-					{
-						sensors[i].linkToNeuron(sensorNodes.get(i).neuron);
-					}
-
-				brain.createBrain(neurons, connections);
-
-				return brain;
+				this.blueprints = blueprints;
 			}
 
 		@Override
@@ -329,7 +212,7 @@ public class VisualBrainCreator extends RenderableObject
 			{
 				if (event.getButton() == MouseEvent.BUTTON1)
 					{
-						for (Node n : sensorNodes)
+						for (Node n : blueprints.sensorNodes)
 							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
 								{
 									n.selected = true;
@@ -337,7 +220,7 @@ public class VisualBrainCreator extends RenderableObject
 								}
 							else
 								n.selected = false;
-						for (Node n : neuronNodes)
+						for (Node n : blueprints.neuronNodes)
 							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
 								{
 									n.selected = true;
@@ -345,7 +228,7 @@ public class VisualBrainCreator extends RenderableObject
 								}
 							else
 								n.selected = false;
-						for (Node n : effectorNodes)
+						for (Node n : blueprints.effectorNodes)
 							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
 								{
 									n.selected = true;
@@ -356,31 +239,28 @@ public class VisualBrainCreator extends RenderableObject
 
 						if (!selectedNode.selected)
 							{
-								selectedNode = new Node(TYPE_NEURON, 0, 0);
+								selectedNode = new Node(BrainBlueprints.TYPE_NEURON, 0, 0);
 							}
 					}
 				else if (event.getButton() == MouseEvent.BUTTON3)
 					{
-						for (Node n : sensorNodes)
+						for (Node n : blueprints.sensorNodes)
 							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
 								{
 									secondNode = n;
-									if (selectedNode.type != TYPE_EFFECTOR && secondNode.type != TYPE_SENSOR)
-										connectNode = true;
+									connectNode = true;
 								}
-						for (Node n : neuronNodes)
+						for (Node n : blueprints.neuronNodes)
 							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
 								{
 									secondNode = n;
-									if (selectedNode.type != TYPE_EFFECTOR && secondNode.type != TYPE_SENSOR)
-										connectNode = true;
+									connectNode = true;
 								}
-						for (Node n : effectorNodes)
+						for (Node n : blueprints.effectorNodes)
 							if (Tools.getVectorLength(n.x, n.y, event.getX(), event.getY()) < 6)
 								{
 									secondNode = n;
-									if (selectedNode.type != TYPE_EFFECTOR && secondNode.type != TYPE_SENSOR)
-										connectNode = true;
+									connectNode = true;
 								}
 					}
 			}
@@ -388,7 +268,6 @@ public class VisualBrainCreator extends RenderableObject
 		@Override
 		protected void mouseReleased(MouseEvent event)
 			{
-
 			}
 
 		@Override
@@ -410,13 +289,11 @@ public class VisualBrainCreator extends RenderableObject
 		@Override
 		protected void mouseWheelScrolled(MouseWheelEvent event)
 			{
-
 			}
 
 		@Override
 		protected void actionPerformed(ActionEvent event)
 			{
-
 			}
 
 		@Override
@@ -424,6 +301,8 @@ public class VisualBrainCreator extends RenderableObject
 			{
 				if (event.getKeyChar() == 'n')
 					placeNode = true;
+				else if (event.getKeyChar() == 'i')
+					placeInhibitingNode = true;
 				else if (event.getKeyChar() == 'd')
 					removeNode = true;
 				else if (event.getKeyChar() == 'c')
@@ -439,72 +318,45 @@ public class VisualBrainCreator extends RenderableObject
 		@Override
 		protected void keyReleased(KeyEvent event)
 			{
-
 			}
 
 		@Override
 		protected void keyTyped(KeyEvent event)
 			{
-
 			}
 
 		@Override
 		protected void mouseClicked(MouseEvent event)
 			{
-
 			}
 
 		@Override
 		protected void mouseEntered(MouseEvent event)
 			{
-
 			}
 
 		@Override
 		protected void mouseExited(MouseEvent event)
 			{
-
 			}
 
 		@Override
 		protected void programGainedFocus(WindowEvent event)
 			{
-
 			}
 
 		@Override
 		protected void programLostFocus(WindowEvent event)
 			{
-
 			}
 
 		@Override
 		protected void frameResized(ComponentEvent event)
 			{
-
 			}
 
 		@Override
 		public void tScrollBarScrolled(TScrollEvent event)
 			{
-
-			}
-
-		private class Node
-			{
-				private int type, x, y;
-				private boolean selected = false;
-				private Neuron neuron;
-
-				private String description = "";
-
-				private ArrayList<Node> connections = new ArrayList<Node>();
-
-				private Node(int type, int x, int y)
-					{
-						this.type = type;
-						this.x = x;
-						this.y = y;
-					}
 			}
 	}

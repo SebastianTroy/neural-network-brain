@@ -2,6 +2,9 @@ package brain;
 
 import java.util.ArrayList;
 
+import brain.addons.Node;
+import brain.addons.VisualBrainCreator;
+
 /**
  * This class is a holding class used to hold a network of {@link Neuron}s which
  * are meant to represent a highly simplified brain. This class doesn't handle
@@ -26,6 +29,12 @@ public class Brain
 		 * These are the {@link Neuron}s that the {@link Brain} is made up of.
 		 */
 		protected Neuron[] neurons;
+
+		/**
+		 * These contain the information required to generate this brain, they
+		 * are also needed in order to create another brain based on this one.
+		 */
+		public BrainBlueprints blueprints;
 		/**
 		 * This is the age of the {@link Brain} in seconds, it is used by the
 		 * {@link Neuron}s to keep track of the time since they last 'fired' /
@@ -34,31 +43,120 @@ public class Brain
 		protected double ageInSeconds = 0;
 
 		/**
+		 * NOTE:
+		 * <p>
+		 * there is no guaruntee that any {@link Sensor}s or {@link Effector}s
+		 * will actually be connected to the {@link Brain}. You must connect
+		 * them yourself in the {@link VisualBrainCreator} or hope that
+		 * connections evolve naturally during your simulation)
+		 * 
 		 * @param neuronRechargeTime
 		 *            - This dictates how long any individual {@link Neuron} has
 		 *            to wait after 'firing' / 'depolorising' between before it
 		 *            can 'fire' / 'depolorise' again.
+		 * 
+		 * @param sensors
+		 *            - This array should contain all of the {@link Sensor}s
+		 *            that you want to have available to the brain.
+		 * 
+		 * @param effectors
+		 *            - Thiss array should contain all the {@link Effector}s
+		 *            that you want available to the brain.
 		 */
-		public Brain(double neuronRechargeTime)
+		public Brain(double neuronRechargeTime, Sensor[] sensors, Effector[] effectors)
 			{
 				this.neuronRechargeTime = neuronRechargeTime;
-
+				blueprints = new BrainBlueprints(sensors, effectors);
 			}
 
 		/**
-		 * @param brain
-		 *            - The {@link Brain} which you want this to be a copy of.
+		 * NOTE:
+		 * <p>
+		 * You do NOT need to use exactly the same {@link Sensor}s and
+		 * {@link Effector}s as were used in the parentBrain. This {@link Brain}
+		 * will be as close a copyof the parentBrain as is possible. Any newly
+		 * added {@link Sensor}s and {@link Effector}s will be added but not
+		 * necissarily connected to the {@link Brain} and any missing will be
+		 * removed.
+		 * 
+		 * @param parentBrain
+		 *            - This is the {@link Brain} upon which this new
+		 *            {@link Brain} will be based.
+		 * 
+		 * @param neuronRechargeTime
+		 *            - This dictates how long any individual {@link Neuron} has
+		 *            to wait after 'firing' / 'depolorising' between before it
+		 *            can 'fire' / 'depolorise' again.
+		 * 
+		 * @param sensors
+		 *            - This array should contain all of the {@link Sensor}s
+		 *            that you want to have available to the brain.
+		 * 
+		 * @param effectors
+		 *            - Thiss array should contain all the {@link Effector}s
+		 *            that you want available to the brain.
 		 */
-		public Brain(Brain brain)
+		public Brain(Brain parentBrain, Sensor[] sensors, Effector[] effectors)
 			{
-				neuronRechargeTime = brain.neuronRechargeTime;
-				neurons = new Neuron[brain.neurons.length];
-				int i = 0;
-				for (Neuron n : brain.neurons)
+				this.neuronRechargeTime = parentBrain.neuronRechargeTime;
+				blueprints = new BrainBlueprints(parentBrain.blueprints, sensors, effectors);
+			}
+
+		public final void generateBrain()
+			{
+				Node[] nodes = new Node[blueprints.sensorNodes.size() + blueprints.neuronNodes.size() + blueprints.effectorNodes.size()];
+				int nodeNum = 0;
+				for (Node n : blueprints.neuronNodes)
 					{
-						i++;
-						neurons[i] = n;
+						nodes[nodeNum] = n;
+						nodeNum++;
 					}
+				for (Node n : blueprints.sensorNodes)
+					{
+						nodes[nodeNum] = n;
+						nodeNum++;
+					}
+				for (Node n : blueprints.effectorNodes)
+					{
+						nodes[nodeNum] = n;
+						nodeNum++;
+					}
+
+				Neuron[] neurons = new Neuron[nodes.length];
+				ArrayList<ArrayList<Triggerable>> connections = new ArrayList<ArrayList<Triggerable>>(neurons.length);
+				for (int i = 0; i < neurons.length; i++)
+					connections.add(new ArrayList<Triggerable>());
+
+				for (int i = 0; i < nodes.length; i++)
+					{
+						nodes[i].neuron = new Neuron(this, nodes[i].inhibitor, 1, 2.5);
+						neurons[i] = nodes[i].neuron;
+					}
+
+				for (int i = 0; i < nodes.length; i++)
+					for (int j = 0; j < nodes[i].connections.size(); j++)
+						switch (nodes[i].connections.get(j).type)
+							{
+							case BrainBlueprints.TYPE_NEURON:
+								connections.get(i).add(nodes[i].connections.get(j).neuron);
+								break;
+							case BrainBlueprints.TYPE_EFFECTOR:
+								boolean foundEffector = false;
+								for (int effectorNum = 0; !foundEffector; effectorNum++)
+									if (blueprints.effectorNodes.get(effectorNum) == nodes[i].connections.get(j))
+										{
+											connections.get(i).add(blueprints.getEffectors()[effectorNum]);
+											foundEffector = true;
+										}
+								break;
+							}
+
+				for (int i = 0; i < blueprints.getSensors().length; i++)
+					{
+						blueprints.getSensors()[i].linkToNeuron(blueprints.sensorNodes.get(i).neuron);
+					}
+
+				createBrain(neurons, connections);
 			}
 
 		/**

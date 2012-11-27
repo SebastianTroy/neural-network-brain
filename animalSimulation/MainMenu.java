@@ -96,13 +96,13 @@ public class MainMenu extends RenderableObject
 			{
 				if (event.getSource() == designBrainButton)
 					{
-						hub.environment.organism = new Organism();
-						hub.creator.newBrain(hub.environment.organism.sensors, hub.environment.organism.effectors);
+						hub.environment.startingOrganism = new Organism(20, 20);
+						hub.creator.setBlueprintsToEdit(hub.environment.startingOrganism.brain.blueprints);
 						changeRenderableObject(hub.creator);
 					}
-				else if (event.getSource() == testBrainButton && hub.environment.organism != null)
+				else if (event.getSource() == testBrainButton && hub.environment.startingOrganism != null)
 					{
-						hub.environment.organism.setBrain(hub.creator.generateBrain());
+						hub.environment.startingOrganism.brain.generateBrain();
 						changeRenderableObject(hub.environment);
 					}
 			}

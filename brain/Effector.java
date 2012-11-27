@@ -1,5 +1,7 @@
 package brain;
 
+import TroysCode.Tools;
+
 /**
  * This class should be the base class for any Effector, that is any class which
  * does something when triggered by an output from the brain.
@@ -10,6 +12,8 @@ package brain;
  */
 public abstract class Effector implements Triggerable
 	{
+		private long ID = Tools.randLong(0, Long.MAX_VALUE);
+		
 		/**
 		 * This keeps track of the number of times the {@link Effector} has been
 		 * triggered.
@@ -24,6 +28,11 @@ public abstract class Effector implements Triggerable
 		public final void trigger()
 			{
 				triggerNum++;
+			}
+		
+		@Override
+		public final void inhibit()
+			{
 			}
 
 		/**
@@ -46,6 +55,22 @@ public abstract class Effector implements Triggerable
 		
 		public abstract void tick(double secondsPassed);
 		
+		public final long getID()
+			{
+				return ID;
+			}
+		
+		public final void setID(Effector parent)
+			{
+				ID = parent.ID;
+			}
+		
+		/**
+		 * This method should be overriden in any classes that extend the
+		 * {@link Effector} class.
+		 * 
+		 * @return - A string describing this {@link Effector}.
+		 */
 		public String getDescription()
 			{
 				return "Effector";

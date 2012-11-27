@@ -24,6 +24,12 @@ public class Neuron implements Runnable, Triggerable
 		private Triggerable[] connections;
 
 		/**
+		 * If this boolean is true then when this neuron 'fires' / 'depolorises'
+		 * instead of triggering the other nerve it inhibits it instead.
+		 */
+		private boolean inhibitorNeurone = false;
+
+		/**
 		 * The number of times a {@link Neuron} must be triggered, within the
 		 * {@code triggerResetTime}, for it to 'fire' and trigger each of it's
 		 * {@code connections}
@@ -61,9 +67,10 @@ public class Neuron implements Runnable, Triggerable
 		 * @param triggerResetTime
 		 *            - The length of time this {@link Neuron} will wait to
 		 */
-		public Neuron(Brain brain, int triggerThreshold, double triggerResetTime)
+		public Neuron(Brain brain, boolean isInhibitorNerve, int triggerThreshold, double triggerResetTime)
 			{
 				this.brain = brain;
+				this.inhibitorNeurone = isInhibitorNerve;
 				this.triggerThreshold = triggerThreshold > 1 ? triggerThreshold : 1;
 				this.triggerResetTime = triggerResetTime > 0.01 ? triggerResetTime : 0.01;
 			}
@@ -125,8 +132,24 @@ public class Neuron implements Runnable, Triggerable
 
 						if (triggerCount >= triggerThreshold)
 							{
-								for (Triggerable n : connections)
-									n.trigger();
+								try
+									{
+										synchronized (thread)
+											{
+												thread.wait(10);
+											}
+									}
+								catch (InterruptedException e)
+									{
+										Tools.errorWindow(e, "Neuron::run()");
+									}
+
+								if (inhibitorNeurone)
+									for (Triggerable t : connections)
+										t.inhibit();
+								else
+									for (Triggerable t : connections)
+										t.trigger();
 
 								timeOfLastDepolorisation = brain.ageInSeconds;
 							}
@@ -160,5 +183,11 @@ public class Neuron implements Runnable, Triggerable
 								thread.notify();
 							}
 					}
+			}
+
+		@Override
+		public final void inhibit()
+			{
+				triggerCount = 0;
 			}
 	}
