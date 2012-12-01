@@ -2,7 +2,7 @@ package TroysCode;
 
 import animalSimulation.Environment;
 import animalSimulation.MainMenu;
-import brain.addons.VisualBrainCreator;
+import brain.addons.VisualBlueprintEditor;
 
 /**
  * The {@link hub} Class Contains the main method.
@@ -36,7 +36,7 @@ public class hub
 		 * {@link Frame} Class. It can also be used to track compatability due
 		 * to version differences.
 		 */
-		public static final String versionNumber = "0.1_20";
+		public static final String versionNumber = "0.1_30";
 		/**
 		 * This is the name of the folder containing the images used by Troy's
 		 * Code. It must contain all of the default texture files, however their
@@ -49,7 +49,7 @@ public class hub
 		 * You can include code within <code> if (DEBUG) </code> blocks when
 		 * developing for testing purposes.
 		 */
-		public static final boolean DEBUG = true;
+		public static final boolean DEBUG = false;
 
 		/*
 		 * These classes are the "vital" classes, essential to the way the
@@ -80,7 +80,7 @@ public class hub
 		 * ""hub.renderer.changeRenderableObject(hub.mainMenu)""
 		 */
 		public static final MainMenu menu = new MainMenu();
-		public static final VisualBrainCreator creator = new VisualBrainCreator();
+		public static final VisualBlueprintEditor creator = new VisualBlueprintEditor();
 		public static final Environment environment = new Environment();
 
 		/**

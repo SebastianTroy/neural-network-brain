@@ -1,9 +1,14 @@
 package animalSimulation.animal;
 
+import java.util.ArrayList;
+
 import TroysCode.Tools;
+import TroysCode.hub;
+import animalSimulation.Environment;
 import animalSimulation.animal.effectors.LeftFin;
 import animalSimulation.animal.effectors.RightFin;
 import animalSimulation.animal.effectors.Tail;
+import animalSimulation.animal.sensors.BinaryEye;
 import animalSimulation.animal.sensors.Whisker;
 import brain.Brain;
 import brain.Effector;
@@ -26,37 +31,72 @@ public class Organism
 			{
 				this.x = x;
 				this.y = y;
-
-				sensors = new Sensor[1];
-				sensors[0] = new Whisker(this);
-				effectors = new Effector[3];
-				effectors[0] = new LeftFin(this);
-				effectors[1] = new RightFin(this);
-				effectors[2] = new Tail(this);
-
-				brain = new Brain(0, sensors, effectors);
 				facing = Tools.randInt(NORTH, WEST);
+
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				ArrayList<Sensor> newSensors = new ArrayList<Sensor>();
+
+				newSensors.add(new Whisker(this));
+				Sensor[] rods = new BinaryEye(this, 45).getSensors();
+				for (Sensor s : rods)
+					newSensors.add(s);
+				rods = new BinaryEye(this, -45).getSensors();
+				for (Sensor s : rods)
+					newSensors.add(s);
+
+				sensors = new Sensor[newSensors.size()];
+				newSensors.toArray(sensors);
+
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				ArrayList<Effector> newEffectors = new ArrayList<Effector>();
+
+				newEffectors.add(new LeftFin(this));
+				newEffectors.add(new RightFin(this));
+				newEffectors.add(new Tail(this));
+
+				effectors = new Effector[newEffectors.size()];
+				newEffectors.toArray(effectors);
+
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				brain = new Brain(0, sensors, effectors);
 			}
 
 		public Organism(Organism o, int x, int y)
 			{
 				this.x = x;
 				this.y = y;
-
-				sensors = new Sensor[1];
-				sensors[0] = new Whisker(this);
-				sensors[0].setID(o.sensors[0]);
-				
-				effectors = new Effector[3];
-				effectors[0] = new LeftFin(this);
-				effectors[0].setID(o.effectors[0]);
-				effectors[1] = new RightFin(this);
-				effectors[1].setID(o.effectors[1]);
-				effectors[2] = new Tail(this);
-				effectors[2].setID(o.effectors[2]);
-
-				brain = new Brain(o.brain, sensors, effectors);
 				facing = Tools.randInt(NORTH, WEST);
+
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				ArrayList<Sensor> newSensors = new ArrayList<Sensor>();
+
+				newSensors.add(new Whisker(this));
+				Sensor[] rods = new BinaryEye(this, 45).getSensors();
+				for (Sensor s : rods)
+					newSensors.add(s);
+				rods = new BinaryEye(this, -45).getSensors();
+				for (Sensor s : rods)
+					newSensors.add(s);
+
+				sensors = new Sensor[newSensors.size()];
+				newSensors.toArray(sensors);
+
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				ArrayList<Effector> newEffectors = new ArrayList<Effector>();
+
+				newEffectors.add(new LeftFin(this));
+				newEffectors.add(new RightFin(this));
+				newEffectors.add(new Tail(this));
+
+				effectors = new Effector[newEffectors.size()];
+				newEffectors.toArray(effectors);
+
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				for (int i = 0; i < sensors.length && i < o.sensors.length; i++)
+					sensors[i].setID(o.sensors[i]);
+				for (int i = 0; i < effectors.length && i < o.effectors.length; i++)
+					effectors[i].setID(o.effectors[i]);
+				brain = new Brain(o.brain, sensors, effectors);
 			}
 
 		public final void setBrain(Brain brain)
@@ -66,10 +106,22 @@ public class Organism
 
 		public final void tick(double secondsPassed)
 			{
+				brain.tick(secondsPassed);
+
 				for (Sensor s : sensors)
 					s.tick(secondsPassed);
 
 				for (Effector e : effectors)
 					e.tick(secondsPassed);
+			}
+
+		public final void move(int xMod, int yMod)
+			{
+				if (hub.environment.getEnvironmentAt(x + xMod, y + yMod) == Environment.EMPTY.getRGB())
+					{
+						hub.environment.moveOrganism(x, y, xMod, yMod);
+						x += xMod;
+						y += yMod;
+					}
 			}
 	}

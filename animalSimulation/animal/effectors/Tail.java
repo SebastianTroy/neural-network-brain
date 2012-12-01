@@ -6,45 +6,41 @@ import brain.Effector;
 
 public class Tail extends Effector
 	{
-		private Organism self;
+		private Organism organism;
 		private double speed = 0.25;
 		private double counter = 0;
 
 		public Tail(Organism self)
 			{
-				this.self = self;
+				this.organism = self;
 			}
 
 		@Override
 		public void tick(double secondsPassed)
 			{
-				if (counter < 0 && hasBeenTriggered())
+				if (hasBeenTriggered() && counter < 0)
 					{
 						counter = speed;
 
-						switch (self.facing)
+						switch (organism.facing)
 							{
 							case Organism.NORTH:
-								if (hub.environment.isFree(self.x, self.y - 1))
-									self.y--;
+								organism.move(0, -1);
 								break;
 							case Organism.SOUTH:
-								if (hub.environment.isFree(self.x, self.y + 1))
-									self.y++;
+								organism.move(0, 1);
 								break;
 							case Organism.EAST:
-								if (hub.environment.isFree(self.x + 1, self.y))
-									self.x++;
+								organism.move(1, 0);
 								break;
 							case Organism.WEST:
-								if (hub.environment.isFree(self.x - 1, self.y))
-									self.x--;
+								organism.move(-1, 0);
 								break;
 							}
 					}
 				counter -= secondsPassed;
 			}
-		
+
 		@Override
 		public String getDescription()
 			{

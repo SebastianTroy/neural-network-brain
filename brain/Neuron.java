@@ -136,7 +136,7 @@ public class Neuron implements Runnable, Triggerable
 									{
 										synchronized (thread)
 											{
-												thread.wait(10);
+												thread.wait(20);
 											}
 									}
 								catch (InterruptedException e)
@@ -176,6 +176,8 @@ public class Neuron implements Runnable, Triggerable
 			{
 				if (brain.ageInSeconds - timeOfLastDepolorisation >= brain.neuronRechargeTime)
 					{
+						brain.fireCount++;
+
 						triggerCount++;
 						timeOfLastTrigger = brain.ageInSeconds;
 						synchronized (thread)

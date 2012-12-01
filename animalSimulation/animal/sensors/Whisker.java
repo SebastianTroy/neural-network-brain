@@ -1,6 +1,7 @@
 package animalSimulation.animal.sensors;
 
 import TroysCode.hub;
+import animalSimulation.Environment;
 import animalSimulation.animal.Organism;
 import brain.Sensor;
 
@@ -35,7 +36,7 @@ public class Whisker extends Sensor
 						x--;
 						break;
 					}
-				if (counter < 0 && !hub.environment.isFree(x, y))
+				if (counter < 0 && hub.environment.getEnvironmentAt(x, y) != Environment.EMPTY.getRGB())
 					{
 						counter = resetSpeed;
 						sensorTriggered();

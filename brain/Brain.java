@@ -2,7 +2,7 @@ package brain;
 
 import java.util.ArrayList;
 
-import brain.addons.VisualBrainCreator;
+import brain.addons.VisualBlueprintEditor;
 
 /**
  * This class is a holding class used to hold a network of {@link Neuron}s which
@@ -41,12 +41,15 @@ public class Brain
 		 */
 		protected double ageInSeconds = 0;
 
+		// TODO remove this
+		public int fireCount = 0;
+
 		/**
 		 * NOTE:
 		 * <p>
 		 * there is no guaruntee that any {@link Sensor}s or {@link Effector}s
 		 * will actually be connected to the {@link Brain}. You must connect
-		 * them yourself in the {@link VisualBrainCreator} or hope that
+		 * them yourself in the {@link VisualBlueprintEditor} or hope that
 		 * connections evolve naturally during your simulation)
 		 * 
 		 * @param neuronRechargeTime
@@ -147,15 +150,6 @@ public class Brain
 										if (nodes[i].connections.get(j).ID == e.getID())
 											connections.get(i).add(e);
 									}
-
-//TODO remove if not needed
-//								boolean foundEffector = false;
-//								for (int effectorNum = 0; !foundEffector; effectorNum++)
-//									if (blueprints.effectorNodes.get(effectorNum) == nodes[i].connections.get(j))
-//										{
-//											connections.get(i).add(blueprints.getEffectors()[effectorNum]);
-//											foundEffector = true;
-//										}
 								break;
 							}
 
@@ -166,8 +160,6 @@ public class Brain
 								blueprints.getSensors()[i].linkToNeuron(node.neuron);
 								break;
 							}
-						else
-							System.out.println("SENSOR NOT LINKED - generateBrain()");
 
 				linkBrain(neurons, connections);
 			}
@@ -232,6 +224,14 @@ public class Brain
 		 */
 		public final void kill()
 			{
-				alive = false;
+				if (alive)
+					{
+						ageInSeconds += neuronRechargeTime + 1;
+
+						for (Neuron n : neurons)
+							n.trigger();
+
+						alive = false;
+					}
 			}
 	}

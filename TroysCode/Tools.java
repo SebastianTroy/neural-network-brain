@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Random;
 
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -25,12 +26,19 @@ import TroysCode.T.TVector;
  */
 public class Tools
 	{
+		private static final Random r = new Random();
+		
 		/**
 		 * Warning, no instances of this class should ever be made!
 		 */
 		private Tools()
 			{
 			}
+		
+		public final static void seedRandom(long seed)
+		{
+			r.setSeed(seed);
+		}
 
 		/**
 		 * @return A random boolean value. (either true or false)
@@ -38,7 +46,7 @@ public class Tools
 		public final static Boolean randBool()
 			{
 				Boolean bool;
-				int rnd = (int) (Math.random() * 2) + 1;
+				int rnd = (int) (r.nextDouble() * 2) + 1;
 				if (rnd == 2)
 					bool = true;
 				else
@@ -51,7 +59,7 @@ public class Tools
 		 */
 		public static final double randPercent()
 			{
-				double rnd = (Math.random() * 100.001);
+				double rnd = (r.nextDouble() * 100.001);
 				return rnd > 100 ? 100 : rnd;
 			}
 
@@ -67,7 +75,7 @@ public class Tools
 		 */
 		public static final int randInt(int low, int high)
 			{
-				return (int) (Math.random() * (high - low + 1)) + low;
+				return (int) (r.nextDouble() * (high - low + 1)) + low;
 			}
 
 		/**
@@ -82,7 +90,7 @@ public class Tools
 		 */
 		public static final float randFloat(float low, float high)
 			{
-				float rnd = (float) (Math.random() * (high - low + 0.001)) + low;
+				float rnd = (float) (r.nextDouble() * (high - low + 0.001)) + low;
 				return rnd > high ? high : rnd;
 			}
 
@@ -98,7 +106,7 @@ public class Tools
 		 */
 		public static final double randDouble(double low, double high)
 			{
-				double rnd = (Math.random() * (high - low + 0.001)) + low;
+				double rnd = (r.nextDouble() * (high - low + 0.001)) + low;
 				return rnd > high ? high : rnd;
 			}
 
@@ -114,7 +122,7 @@ public class Tools
 		 */
 		public static final long randLong(long low, long high)
 			{
-				return (long) ((Math.random() * (high - low + 1)) + low);
+				return (long) ((r.nextDouble() * (high - low + 1)) + low);
 			}
 
 		/**
@@ -124,9 +132,9 @@ public class Tools
 		 */
 		public static final Color randColour()
 			{
-				int red = (int) (Math.random() * 256);
-				int green = (int) (Math.random() * 256);
-				int blue = (int) (Math.random() * 256);
+				int red = (int) (r.nextDouble() * 256);
+				int green = (int) (r.nextDouble() * 256);
+				int blue = (int) (r.nextDouble() * 256);
 				Color randomColour = new Color(red, green, blue);
 				return randomColour;
 			}
@@ -138,10 +146,10 @@ public class Tools
 		 */
 		public static final Color randAlphaColour()
 			{
-				int red = (int) (Math.random() * 256);
-				int green = (int) (Math.random() * 256);
-				int blue = (int) (Math.random() * 256);
-				int alpha = (int) (Math.random() * 256);
+				int red = (int) (r.nextDouble() * 256);
+				int green = (int) (r.nextDouble() * 256);
+				int blue = (int) (r.nextDouble() * 256);
+				int alpha = (int) (r.nextDouble() * 256);
 				Color randomColour = new Color(red, green, blue, alpha);
 				return randomColour;
 			}
@@ -223,7 +231,7 @@ public class Tools
 				return new Color(((colOne.getRed() + colTwo.getRed()) / 2), ((colOne.getGreen() + colTwo.getGreen()) / 2),
 						((colOne.getBlue() + colTwo.getBlue()) / 2), ((colOne.getAlpha() + colTwo.getAlpha()) / 2));
 			}
-
+		
 		public static int[] getDigitArrayFromInt(int number)
 			{
 				int numCopy = number;
@@ -235,7 +243,7 @@ public class Tools
 					}
 				if (number == 0)
 					{
-						int[] zeroArray = { 0 };
+						int[] zeroArray = {0};
 						return zeroArray;
 					}
 
@@ -267,7 +275,7 @@ public class Tools
 						rho = theta - Math.toRadians(40);
 					}
 			}
-
+		
 		/**
 		 * This method calculates the vector between two points.
 		 * 

@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import TroysCode.RenderableObject;
 import TroysCode.Tools;
@@ -24,9 +25,10 @@ public class Environment extends RenderableObject
 		private int height = 559;
 		private BufferedImage environmentMap = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-		private final Color EMPTY = new Color(255, 255, 255);
-		private final Color BLOCKADE = new Color(0, 0, 0);
-		private final Color FOOD = new Color(255, 0, 255);
+		public static final Color EMPTY = new Color(255, 255, 255);
+		public static final Color BLOCKADE = new Color(0, 0, 0);
+		public static final Color ORGANISM = new Color(0, 0, 255);
+		public static final Color FOOD = new Color(255, 0, 255);
 
 		private int currentOrganism = 0;
 		public Organism startingOrganism = null;
@@ -35,16 +37,22 @@ public class Environment extends RenderableObject
 		public Environment()
 			{
 				Graphics g = environmentMap.getGraphics();
-				g.setColor(EMPTY);
+				g.setColor(BLOCKADE);
 				g.fillRect(3, 3, width - 6, height - 6);
+				
+				Tools.seedRandom(123456789);
+				
+				// blobby middle space
+				g.setColor(EMPTY);
+				for (int i = 0; i < 350; i++)
+					g.fillOval(Tools.randInt(-100, width), Tools.randInt(-100, height), Tools.randInt(40, 100), Tools.randInt(40, 100));
+				
+				// Outer ring
 				g.setColor(BLOCKADE);
 				g.fillRect(0, 0, 3, height);
 				g.fillRect(3, 0, width - 3, 3);
 				g.fillRect(width - 3, 0, 3, height);
 				g.fillRect(0, 0, 3, height);
-
-				for (int i = 0; i < 500; i++)
-					g.fillOval(Tools.randInt(-10, width + 10), Tools.randInt(-10, height + 10), Tools.randInt(5, 25), Tools.randInt(5, 25));
 			}
 
 		@Override
@@ -57,9 +65,16 @@ public class Environment extends RenderableObject
 			{
 			}
 
+		double timer = 0;
+
 		@Override
 		protected void tick(double secondsPassed)
 			{
+				timer += secondsPassed;
+				if (timer > 20)
+					for (Organism organism : population)
+						organism.brain.kill();
+
 				for (Organism organism : population)
 					organism.tick(secondsPassed);
 			}
@@ -78,46 +93,29 @@ public class Environment extends RenderableObject
 			{
 				for (int i = 0; i < population.length; i++)
 					{
-						population[i] = new Organism(startingOrganism, Tools.randInt(0, width), Tools.randInt(0, height));
+						population[i] = new Organism(startingOrganism, Tools.randInt(0, width - 1), Tools.randInt(0, height - 1));
 						population[i].brain.generateBrain();
 					}
 			}
-		
+
 		public final void addOrganism(Organism o)
 			{
 				population[currentOrganism] = o;
 				currentOrganism++;
 			}
 
-		public final boolean isFree(int x, int y)
+		public final int getEnvironmentAt(int x, int y)
 			{
-				if (x < 0 || y < 0 || x > width - 1 || y > width - 1)
-					return false;
-				
-				if (environmentMap.getRGB(x, y) == EMPTY.getRGB())
-					return true;
+				if (x < 0 || y < 0 || x > width - 1 || y > height - 1)
+					return BLOCKADE.getRGB();
 
-				return false;
+				return environmentMap.getRGB(x, y);
 			}
 
-		public final boolean containsCreature(int x, int y)
+		public void moveOrganism(int x, int y, int xMod, int yMod)
 			{
-				for (Organism o : population)
-					if (o.x == x && o.y == y)
-						return true;
-
-				return false;
-			}
-
-		public final boolean containsFood(int x, int y)
-			{
-				if (x < 0 || y < 0 || x > width - 1 || y > width - 1)
-					return false;
-				
-				if (environmentMap.getRGB(x, y) == FOOD.getRGB())
-					return true;
-
-				return false;
+				environmentMap.setRGB(x, y, EMPTY.getRGB());
+				environmentMap.setRGB(x + xMod, y + yMod, ORGANISM.getRGB());
 			}
 
 		@Override
