@@ -1,9 +1,12 @@
 package animalSimulation.animal.sensors;
 
-import brain.Sensor;
+import java.awt.Color;
+import java.awt.Graphics;
+
 import TroysCode.hub;
 import animalSimulation.Environment;
 import animalSimulation.animal.Organism;
+import brain.Sensor;
 
 public class BinaryEye
 	{
@@ -51,7 +54,7 @@ public class BinaryEye
 					{
 						if (counter < 0)
 							{
-								counter = 0.5;
+								counter = 0.20;
 								
 								double angle = rodAngle;
 								switch (organism.facing)
@@ -65,13 +68,13 @@ public class BinaryEye
 									case Organism.WEST:
 										angle -= 90;
 										break;
-									}
+									}//TODO convert to radians to stop nedless calculations every time!
 
 								double x = Math.sin(angle);
 								double y = -Math.cos(angle);
 
 								boolean objectInSight = false;
-								for (double i = 0; i < 10; i++)
+								for (double i = 1; i < 10; i++)
 									{
 										if (hub.environment.getEnvironmentAt((int) (x * i), (int) (y * i)) != Environment.EMPTY.getRGB())											{
 												objectInSight = true;

@@ -9,17 +9,16 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
 
-import animalSimulation.animal.Organism;
-import brain.Effector;
-import brain.Sensor;
-import brain.addons.TestEffector;
-import brain.addons.TestSensor;
-
 import TroysCode.RenderableObject;
 import TroysCode.hub;
 import TroysCode.T.TButton;
 import TroysCode.T.TMenu;
 import TroysCode.T.TScrollEvent;
+import animalSimulation.animal.Organism;
+import brain.Effector;
+import brain.Sensor;
+import brain.addons.TestEffector;
+import brain.addons.TestSensor;
 
 public class MainMenu extends RenderableObject
 	{

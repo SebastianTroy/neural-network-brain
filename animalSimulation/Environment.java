@@ -9,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 import TroysCode.RenderableObject;
 import TroysCode.Tools;
@@ -32,21 +31,21 @@ public class Environment extends RenderableObject
 
 		private int currentOrganism = 0;
 		public Organism startingOrganism = null;
-		private Organism[] population = new Organism[100];
+		private Organism[] population = new Organism[10];
 
 		public Environment()
 			{
 				Graphics g = environmentMap.getGraphics();
 				g.setColor(BLOCKADE);
 				g.fillRect(3, 3, width - 6, height - 6);
-				
+
 				Tools.seedRandom(123456789);
-				
+
 				// blobby middle space
 				g.setColor(EMPTY);
 				for (int i = 0; i < 350; i++)
 					g.fillOval(Tools.randInt(-100, width), Tools.randInt(-100, height), Tools.randInt(40, 100), Tools.randInt(40, 100));
-				
+
 				// Outer ring
 				g.setColor(BLOCKADE);
 				g.fillRect(0, 0, 3, height);
@@ -65,16 +64,9 @@ public class Environment extends RenderableObject
 			{
 			}
 
-		double timer = 0;
-
 		@Override
 		protected void tick(double secondsPassed)
 			{
-				timer += secondsPassed;
-				if (timer > 20)
-					for (Organism organism : population)
-						organism.brain.kill();
-
 				for (Organism organism : population)
 					organism.tick(secondsPassed);
 			}

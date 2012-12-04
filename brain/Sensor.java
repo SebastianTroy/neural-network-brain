@@ -1,5 +1,7 @@
 package brain;
 
+import java.awt.Graphics;
+
 import TroysCode.Tools;
 
 /**
@@ -44,7 +46,9 @@ public abstract class Sensor
 		protected final void sensorTriggered()
 			{
 				if (neuron != null)
-					neuron.trigger();
+					{
+						neuron.trigger();
+					}
 			}
 
 		public abstract void tick(double secondsPassed);

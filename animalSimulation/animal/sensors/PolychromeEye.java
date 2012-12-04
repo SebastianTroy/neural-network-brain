@@ -1,9 +1,9 @@
 package animalSimulation.animal.sensors;
 
-import brain.Sensor;
 import TroysCode.hub;
 import animalSimulation.Environment;
 import animalSimulation.animal.Organism;
+import brain.Sensor;
 
 public class PolychromeEye
 	{

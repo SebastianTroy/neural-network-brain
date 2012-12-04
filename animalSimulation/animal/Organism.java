@@ -1,5 +1,6 @@
 package animalSimulation.animal;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 import TroysCode.Tools;

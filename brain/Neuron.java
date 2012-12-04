@@ -132,24 +132,8 @@ public class Neuron implements Runnable, Triggerable
 
 						if (triggerCount >= triggerThreshold)
 							{
-								try
-									{
-										synchronized (thread)
-											{
-												thread.wait(20);
-											}
-									}
-								catch (InterruptedException e)
-									{
-										Tools.errorWindow(e, "Neuron::run()");
-									}
-
-								if (inhibitorNeurone)
-									for (Triggerable t : connections)
-										t.inhibit();
-								else
-									for (Triggerable t : connections)
-										t.trigger();
+								for (Triggerable t : connections)
+									new Signal(0.02, t, this.inhibitorNeurone);
 
 								timeOfLastDepolorisation = brain.ageInSeconds;
 							}

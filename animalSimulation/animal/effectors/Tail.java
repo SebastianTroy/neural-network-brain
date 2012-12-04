@@ -1,14 +1,11 @@
 package animalSimulation.animal.effectors;
 
-import TroysCode.hub;
 import animalSimulation.animal.Organism;
 import brain.Effector;
 
 public class Tail extends Effector
 	{
 		private Organism organism;
-		private double speed = 0.25;
-		private double counter = 0;
 
 		public Tail(Organism self)
 			{
@@ -18,14 +15,12 @@ public class Tail extends Effector
 		@Override
 		public void tick(double secondsPassed)
 			{
-				if (hasBeenTriggered() && counter < 0)
+				if (hasBeenTriggered())
 					{
-						counter = speed;
-
 						switch (organism.facing)
 							{
 							case Organism.NORTH:
-								organism.move(0, -1);
+								organism.move(0,  -1);
 								break;
 							case Organism.SOUTH:
 								organism.move(0, 1);
@@ -38,7 +33,6 @@ public class Tail extends Effector
 								break;
 							}
 					}
-				counter -= secondsPassed;
 			}
 
 		@Override

@@ -9,7 +9,7 @@ public class Whisker extends Sensor
 	{
 		private Organism self;
 		private double counter = 0;
-		private double resetSpeed = 1;
+		private double resetSpeed = 0.25;
 
 		public Whisker(Organism self)
 			{
