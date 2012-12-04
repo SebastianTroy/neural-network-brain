@@ -1,8 +1,5 @@
 package animalSimulation.animal.sensors;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import TroysCode.hub;
 import animalSimulation.Environment;
 import animalSimulation.animal.Organism;
@@ -20,18 +17,18 @@ public class BinaryEye
 		private Rod rod6;
 		private Rod rod7;
 
-		public BinaryEye(Organism organism, double angleFacing)
+		public BinaryEye(Organism organism, double angleFacingDegreesZeroNorth)
 			{
 				this.organism = organism;
+				angleFacingDegreesZeroNorth = Math.toRadians(angleFacingDegreesZeroNorth);
 
-				rod1 = new Rod(angleFacing - 45);
-				rod2 = new Rod(angleFacing - 27);
-				rod3 = new Rod(angleFacing - 9);
-				rod4 = new Rod(angleFacing); // extra actuity in the center of
-												// the eye
-				rod5 = new Rod(angleFacing + 9);
-				rod6 = new Rod(angleFacing + 27);
-				rod7 = new Rod(angleFacing + 45);
+				rod1 = new Rod(angleFacingDegreesZeroNorth - 0.523598776);
+				rod2 = new Rod(angleFacingDegreesZeroNorth - 0.34906585);
+				rod3 = new Rod(angleFacingDegreesZeroNorth - 0.174532925);
+				rod4 = new Rod(angleFacingDegreesZeroNorth);
+				rod5 = new Rod(angleFacingDegreesZeroNorth + 0.174532925);
+				rod6 = new Rod(angleFacingDegreesZeroNorth + 0.34906585);
+				rod7 = new Rod(angleFacingDegreesZeroNorth + 0.523598776);
 			}
 
 		public final Sensor[] getSensors()
@@ -55,31 +52,34 @@ public class BinaryEye
 						if (counter < 0)
 							{
 								counter = 0.20;
-								
+
 								double angle = rodAngle;
 								switch (organism.facing)
 									{
 									case Organism.SOUTH:
-										angle += 180;
+										angle += 3.14159265;
 										break;
 									case Organism.EAST:
-										angle += 90;
+										angle += 1.57079633;
 										break;
 									case Organism.WEST:
-										angle -= 90;
+										angle -= 1.57079633;
 										break;
-									}//TODO convert to radians to stop nedless calculations every time!
+									}
 
 								double x = Math.sin(angle);
 								double y = -Math.cos(angle);
 
 								boolean objectInSight = false;
-								for (double i = 1; i < 10; i++)
+								for (double i = 0; i < 10; i++)
 									{
-										if (hub.environment.getEnvironmentAt((int) (x * i), (int) (y * i)) != Environment.EMPTY.getRGB())											{
-												objectInSight = true;
-												i = 10;
-											}
+										if (Math.abs((int) (x * i) + (int) (y * i)) > 0)
+											if (hub.environment.getEnvironmentAt(organism.x + (int) (x * i), organism.y + (int) (y * i)) != Environment.EMPTY
+													.getRGB())
+												{
+													objectInSight = true;
+													i = 10;
+												}
 									}
 
 								if (objectInSight)
@@ -91,7 +91,7 @@ public class BinaryEye
 				@Override
 				public final String getDescription()
 					{
-						return "Rod: " + rodAngle;
+						return "Rod: " + (int) (Math.toDegrees(rodAngle));
 					}
 			}
 	}

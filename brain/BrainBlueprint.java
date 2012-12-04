@@ -60,7 +60,6 @@ public class BrainBlueprint
 								{
 									sensorNodes.remove(i);
 									i = sensorNodes.size();
-									System.out.println("Sensor removed - BrainBlueprint::BrainBlueprint(Brainblueprint, Sensor[], Effector[])");
 								}
 				for (Effector e : basePrints.effectors)
 					if (!containsEffector(effectors, e))
@@ -69,7 +68,6 @@ public class BrainBlueprint
 								{
 									effectorNodes.remove(i);
 									i = effectorNodes.size();
-									System.out.println("Effector removed - BrainBlueprint::BrainBlueprint(Brainblueprint, Sensor[], Effector[])");
 								}
 
 				// add new sensors and effectors
@@ -81,7 +79,6 @@ public class BrainBlueprint
 							node.description = s.getDescription();
 							node.inhibitor = false;
 							sensorNodes.add(node);
-							System.out.println("Sensor added - BrainBlueprint::BrainBlueprint(Brainblueprint, Sensor[], Effector[])");
 						}
 				for (Effector e : effectors)
 					if (!containsEffector(basePrints.effectors, e))
@@ -90,7 +87,6 @@ public class BrainBlueprint
 							node.ID = e.getID();
 							node.description = e.getDescription();
 							effectorNodes.add(node);
-							System.out.println("Effector added - BrainBlueprint::BrainBlueprint(Brainblueprint, Sensor[], Effector[])");
 						}
 
 				for (int i = 0; i < sensors.length; i++)

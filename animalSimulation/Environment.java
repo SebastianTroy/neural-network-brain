@@ -78,7 +78,7 @@ public class Environment extends RenderableObject
 
 				g.setColor(Color.BLUE);
 				for (Organism o : population)
-					g.fillOval(o.x - 1, o.y - 1, 3, 3);
+						g.fillOval(o.x - 1, o.y - 1, 3, 3);
 			}
 
 		public final void prepareSimulation()
@@ -113,7 +113,6 @@ public class Environment extends RenderableObject
 		@Override
 		protected void mousePressed(MouseEvent event)
 			{
-
 			}
 
 		@Override

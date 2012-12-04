@@ -15,10 +15,6 @@ import TroysCode.T.TButton;
 import TroysCode.T.TMenu;
 import TroysCode.T.TScrollEvent;
 import animalSimulation.animal.Organism;
-import brain.Effector;
-import brain.Sensor;
-import brain.addons.TestEffector;
-import brain.addons.TestSensor;
 
 public class MainMenu extends RenderableObject
 	{
@@ -28,10 +24,6 @@ public class MainMenu extends RenderableObject
 		private final TButton designBrainButton = new TButton(0, 0, "Design a Brain");
 		private final TButton testBrainButton = new TButton(0, 0, "Test Brain");
 		
-		/* Create brain options */
-		Sensor[] sensors = {new TestSensor()};
-		Effector[] effectors = {new TestEffector()};
-
 		@Override
 		protected void initiate()
 			{

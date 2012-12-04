@@ -1,7 +1,5 @@
 package brain;
 
-import java.awt.Graphics;
-
 import TroysCode.Tools;
 
 /**
