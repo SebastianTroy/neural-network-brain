@@ -1,7 +1,7 @@
-neural-network-brain/bin
-neural-network-brain/.settings
-neural-network-brain/.classpath
-neural-network-brain/.project
+Neural Web/bin
+Neural Web/.settings
+Neural Web/.classpath
+Neural Web/.project
 
 *.class
 

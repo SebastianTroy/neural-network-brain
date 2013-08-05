@@ -2,5 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TComponents"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Tools"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TroysCode 2.0"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
