@@ -1,0 +1,10 @@
+neural-network-brain/bin
+neural-network-brain/.settings
+neural-network-brain/.classpath
+neural-network-brain/.project
+
+*.class
+
+# Package Files #
+*.war
+*.ear
