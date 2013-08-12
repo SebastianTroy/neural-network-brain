@@ -39,8 +39,8 @@ public class NeuralWeb
 		public NeuralWeb(int[] genes)
 			{
 				this.genes = genes;
-				this.numInputs = NUM_INPUTS;
-				this.numOutputs = NUM_OUTPUTS;
+				this.numInputs = genes[NUM_INPUTS];
+				this.numOutputs = genes[NUM_OUTPUTS];
 				neurons = new HashMap<Integer, Neuron>(NUM_NEURONS);
 
 				createBrainFromGenes(genes);
@@ -67,9 +67,12 @@ public class NeuralWeb
 			{
 				if (brainOutputNumber < numOutputs)
 					{
-						// "-brainOutputNumber" because output neurons have
-						// negative ID's, this is hidden from the end user.
-						Neuron sender = neurons.get(-brainOutputNumber);
+						/*
+						 * "-brainOutputNumber" because output neurons have
+						 * negative ID's, this is hidden from the end user. "-1"
+						 * because the first output ID is -1, not 0.
+						 */
+						Neuron sender = neurons.get(-brainOutputNumber - 1);
 						sender.connections.addLast(new Connection(sender, output));
 					}
 			}
@@ -78,9 +81,9 @@ public class NeuralWeb
 		 * Any messages sent by {@link Neuron}s and inputs are sent,
 		 * {@link neuron}s that receive messages are tested to see if they have
 		 * been triggered, and a new message is created if they have, this
-		 * message is stored until the nect call of this method.
+		 * message is stored until the next call of this method.
 		 */
-		final void calculate()
+		public final void calculate()
 			{
 				// age by 1
 				age++;
@@ -125,10 +128,10 @@ public class NeuralWeb
 		 */
 		private final void createBrainFromGenes(int[] genes)
 			{
-				for (int neuronNum = 0, ID_index = 3; neuronNum < neurons.size(); neuronNum++, ID_index += 4)
+				for (int neuronNum = 0, ID_index = 3; neuronNum < genes[NUM_NEURONS]; neuronNum++, ID_index += 4)
 					neurons.put(genes[ID_index], new Neuron(genes[ID_index], genes[ID_index + CLUSTER], genes[ID_index + THRESHOLD], genes[ID_index + START_LEVEL]));
 
-				for (int sender_ID_index = (genes[NUM_NEURONS] * 4) + 3; sender_ID_index < genes.length; sender_ID_index++)
+				for (int sender_ID_index = (genes[NUM_NEURONS] * 4) + 3; sender_ID_index < genes.length; sender_ID_index += 3)
 					neurons.get(genes[sender_ID_index]).connections.addLast(new Connection(genes[sender_ID_index], genes[sender_ID_index + RECIEVER_ID], genes[sender_ID_index + CONNECTION_WEIGHT]));
 			}
 
@@ -160,12 +163,12 @@ public class NeuralWeb
 					}
 
 				/**
-				 * Triggers this {@link Neuron} with a weight of 1000.
+				 * Triggers this {@link Neuron} ensuring that it fires.
 				 */
 				@Override
 				public final void trigger()
 					{
-						trigger(1000);
+						trigger(threshold);
 					}
 
 				/**
@@ -195,7 +198,7 @@ public class NeuralWeb
 								lastFired = age;
 
 								for (Connection connection : connections)
-									messagesToSendNextCalculation.add(new Message(connection.reciever, connection.weight));
+									messagesToSendNextCalculation.add(new Message(connection.recipient, connection.weight));
 								currentLevel = 0;
 							}
 
@@ -216,20 +219,20 @@ public class NeuralWeb
 		 */
 		private class Connection
 			{
-				private Triggerable sender, reciever;
+				private Triggerable sender, recipient;
 				private int weight;
 
-				private Connection(int senderID, int recieverID, int weight)
+				private Connection(int senderID, int recipientID, int weight)
 					{
 						sender = neurons.get(senderID);
-						reciever = neurons.get(recieverID);
+						recipient = neurons.get(recipientID);
 						this.weight = weight;
 					}
 
-				private Connection(Triggerable sender, Triggerable reciever)
+				private Connection(Triggerable sender, Triggerable recipient)
 					{
 						this.sender = sender;
-						this.reciever = reciever;
+						this.recipient = recipient;
 						weight = 0;
 					}
 			}
