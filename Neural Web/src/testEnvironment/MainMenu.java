@@ -2,10 +2,9 @@ package testEnvironment;
 
 import java.awt.Graphics2D;
 
-import neuralWeb.Input;
+import neuralWeb.NeuralWebEditor;
 import neuralWeb.NeuralWeb;
 import neuralWeb.Triggerable;
-
 import tCode.RenderableObject;
 import tComponents.components.TButton;
 import tComponents.components.TMenu;
@@ -34,20 +33,18 @@ public class MainMenu extends RenderableObject
 				mainMenu.add(brainEditorButton);
 
 				add(mainMenu);
-
-				web = new NeuralWeb(genes);
-
-				in1 = new Input(web, 0);
-				in2 = new Input(web, 1);
-				web.attachOutput(out1 = new Output(), 0);
-				web.attachOutput(out2 = new Output(), 1);
+//
+//				web = new NeuralWeb(genes);
+//
+//				in1 = new Input(web, 0);
+//				in2 = new Input(web, 1);
+//				web.attachOutput(out1 = new Output(), 0);
+//				web.attachOutput(out2 = new Output(), 1);
 			}
 
 		@Override
 		public void tick(double secondsPassed)
-			{
-				web.calculate();
-			}
+			{}
 
 		@Override
 		protected void render(Graphics2D g)
@@ -59,6 +56,6 @@ public class MainMenu extends RenderableObject
 				Object source = e.getSource();
 
 				if (source == brainEditorButton)
-					in1.trigger();
+					changeRenderableObject(new NeuralWebEditor());
 			}
 	}
