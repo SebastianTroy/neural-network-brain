@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import tCode.RenderableObject;
+import tComponents.components.TLabel;
 import tComponents.components.TMenu;
 import tComponents.components.TRadioButton;
 import tComponents.utils.RadioButtonsCollection;
@@ -45,17 +46,30 @@ public class NeuralWebEditor extends RenderableObject
 
 		/*---------------------------------------------*/
 		// Variables that deal with user interaction
-		/**/private final TMenu actionSelectionMenu = new TMenu(0, 0, Main.canvasWidth, 40, TMenu.HORIZONTAL);
-		/**/private final RadioButtonsCollection actionSelectionButtons = new RadioButtonsCollection();
-		/**/private final TRadioButton selectButton = new TRadioButton("Select");
-		/**/private final TRadioButton removeButton = new TRadioButton("Delete");
-		/**/private final TRadioButton moveButton = new TRadioButton("Drag");
+		/**/private final TMenu leftClickMenu = new TMenu(0, 0, Main.canvasWidth, 20, TMenu.HORIZONTAL);
+		/**/private final TMenu rightClickMenu = new TMenu(0, 20, Main.canvasWidth, 20, TMenu.HORIZONTAL);
+		/**/private final TMenu mouseDragMenu = new TMenu(0, 40, Main.canvasWidth, 20, TMenu.HORIZONTAL);
+		/**/private final RadioButtonsCollection leftClickSelections = new RadioButtonsCollection();
+		/**/private final RadioButtonsCollection rightClickSelections = new RadioButtonsCollection();
+		/**/private final RadioButtonsCollection mouseDragSelections = new RadioButtonsCollection();
+		/**/private final TRadioButton leftSelectButton = new TRadioButton("Select");
+		/**/private final TRadioButton rightConnectButton = new TRadioButton("Connect");
+		/**/private final TRadioButton rightDeleteButton = new TRadioButton("Delete");
+		/**/private final TRadioButton dragMoveButton = new TRadioButton("Move");
+		/**/private final TRadioButton dragDeleteButton = new TRadioButton("Delete");
 		/**/
+		/*---------------------------------------------*/
+
+		/*---------------------------------------------*/
+		// Variables that deal with drawing the NeuralWeb
+		/**/private double frameRate = 1.0 / 60.0;
+		/**/private double countDown = frameRate;
+		/**/private boolean redraw = true;
+
 		/*---------------------------------------------*/
 
 		public NeuralWebEditor()
 			{
-				
 				clusters.add(new Cluster(400, 250));
 
 			}
@@ -68,38 +82,79 @@ public class NeuralWebEditor extends RenderableObject
 		@Override
 		protected void initiate()
 			{
-				actionSelectionButtons.add(selectButton);
-				actionSelectionButtons.add(removeButton);
-				actionSelectionButtons.add(moveButton);
-				
-				actionSelectionMenu.add(selectButton);
-				actionSelectionMenu.add(removeButton);
-				actionSelectionMenu.add(moveButton);
-				
-				add(actionSelectionMenu);
+				// Minimise wasted space in radio button Menu's and align left
+				leftClickMenu.setBorderSize(1);
+				rightClickMenu.setBorderSize(1);
+				mouseDragMenu.setBorderSize(1);
+				leftClickMenu.setTComponentSpacing(3);
+				rightClickMenu.setTComponentSpacing(3);
+				mouseDragMenu.setTComponentSpacing(3);
+				leftClickMenu.setTComponentAlignment(TMenu.ALIGN_START);
+				rightClickMenu.setTComponentAlignment(TMenu.ALIGN_START);
+				mouseDragMenu.setTComponentAlignment(TMenu.ALIGN_START);
+
+				// Group RadioButtons
+				leftClickSelections.add(leftSelectButton);
+				rightClickSelections.add(rightConnectButton);
+				rightClickSelections.add(rightDeleteButton);
+				mouseDragSelections.add(dragMoveButton);
+				mouseDragSelections.add(dragDeleteButton);
+
+				// Add TButtons to TMenu's
+				leftClickMenu.add(new TLabel("Left Click:"), false);
+				leftClickMenu.add(leftSelectButton, false);
+				rightClickMenu.add(new TLabel("Right Click:"), false);
+				rightClickMenu.add(rightConnectButton, false);
+				rightClickMenu.add(rightDeleteButton, false);
+				mouseDragMenu.add(new TLabel("Mouse Drag:"), false);
+				mouseDragMenu.add(dragMoveButton, false);
+				mouseDragMenu.add(dragDeleteButton, false);
+
+				// Add menu's to RenderableObject
+				add(leftClickMenu);
+				add(rightClickMenu);
+				add(mouseDragMenu);
+
+				// Set starting mouse interactions
+				leftSelectButton.setChecked(true);
+				rightConnectButton.setChecked(true);
+				dragMoveButton.setChecked(true);
 			}
 
 		@Override
 		public void tick(double secondsPassed)
-			{}
+			{
+				countDown -= secondsPassed;
+				if (countDown < 0)
+					{
+						countDown = frameRate;
+						redraw = true;
+					}
+			}
 
 		@Override
 		protected void render(Graphics2D g)
 			{
-				g.setColor(Color.BLACK);
-				g.fillRect(0, 0, Main.canvasWidth, Main.canvasHeight);
+				// Keep framerate in check
+				if (redraw)
+					{
+						g.setColor(Color.BLACK);
+						g.fillRect(0, 0, Main.canvasWidth, Main.canvasHeight);
 
-				for (Cluster c : clusters)
-					c.render(g);
+						for (Cluster c : clusters)
+							c.render(g);
 
-				for (Neuron n : neurons)
-					n.render(g);
+						for (Neuron n : neurons)
+							n.render(g);
+
+						redraw = false;
+					}
 			}
 
 		@Override
 		public void mousePressed(MouseEvent e)
 			{
-				//if (actionSelectionButtons.)
+				// if (actionSelectionButtons.)
 			}
 
 		private class Cluster

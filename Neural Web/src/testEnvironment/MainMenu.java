@@ -20,10 +20,10 @@ public class MainMenu extends RenderableObject
 		 * neuronThreshold, neuronStartLevel>... , <connectionStartID,
 		 * connectionEndID, connectionWeight>...}
 		 */
-		int[] genes = { 2, 2, 4, 0, 0, 1, 0, 1, 0, 1, 0, -1, 0, 1, 0, -2, 0, 1, 0, 0, -1, 1000, 1, -2, 1000 };
+		//int[] genes = { 2, 2, 4, 0, 0, 1, 0, 1, 0, 1, 0, -1, 0, 1, 0, -2, 0, 1, 0, 0, -1, 1000, 1, -2, 1000 };
 
-		NeuralWeb web;
-		Triggerable in1, in2, out1, out2;
+		//NeuralWeb web;
+		//Triggerable in1, in2, out1, out2;
 
 		@Override
 		protected void initiate()

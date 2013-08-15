@@ -47,7 +47,7 @@ public class NeuralWeb
 			}
 
 		/**
-		 * 
+		 * This method can be used to get
 		 * 
 		 * @param inputNumber
 		 *            - The index for the input that you would like to link to.
@@ -61,6 +61,13 @@ public class NeuralWeb
 					return neurons.get(inputNumber);
 				else
 					return null;
+			}
+		
+		public final void triggerBrainInput(int inputNumber)
+			{
+				if (inputNumber < numInputs)
+					neurons.get(inputNumber).trigger();
+
 			}
 
 		public final void attachOutput(Triggerable output, int brainOutputNumber)

@@ -14,7 +14,7 @@ Not really anything mind blowing, but this lead to my next idea, the human brain
 literally a couple of billion of years, starting in extremely simple organisms as a clump of nerves.
 So why start from the top down? Why attempt to build a complex brain from scratch, why not start off
 with a simple network, of simplified nerves and, as a proof of concept, evolve some sort "brain"
-capable of taking inputs from stimulie and producing relevant outputs. A simple in-out cause and effect
+capable of taking inputs from stimulus and producing relevant outputs. A simple in-out cause and effect
 approach.
 
 This clearly isn't going to evolve a complex mind, as these neural networks are far more simple than
@@ -22,11 +22,11 @@ the biology that evolved real brains, and the challenges the brains are evolving
 far simpler than the ones faced by early life but it is hopefully enough to get some interesting
 results.
 
-My plan is to create a web of neurons which are interconnected and enclosed within a Brain class,
+My plan is to create a web of neurons which are interconnected and enclosed within a NeuralWeb class,
 the only way to interact with the neurons would be through either a "Sensor" which would send 
 binary signals into the brain and an "Effector" which recieves binary signals from the brain and
 acts accordingly.
 
-What the sensors and effectors do is incosequential, they simply input a signal into one neuron in the
-brain, and effectors recieve binary signals from a single neuron. An advanced sensor like an eye for
-example could be made up of many "Rod" sensors which in turn only detect a single pixel.
+What the sensors and effectors do is incosequential to the neural web, they simply input a signal into
+one neuron in the brain, and effectors receive binary signals from a single neuron. An advanced sensor
+like an eye for example could be made up of many "Rod" sensors which in turn only detect a single pixel.

@@ -11,14 +11,15 @@ public class Main extends TCode
 			{
 				super(width, height, framed, resizable);
 				
-				TCode.programName = "Brain Demo";
-				TCode.versionNumber = "Pre Alpha: 0.0";
+				TCode.programName = "Neural Web Demo";
+				TCode.versionNumber = "Pre Alpha: 0.01";
+				TCode.DEBUG = true;
 				
 				this.begin(mainMenu);
 			}
 
 		public static void main(String[] args)
 			{
-				new Main(800, 600, true, false);
+				new Main(900, 700, true, false);
 			}
 	}
