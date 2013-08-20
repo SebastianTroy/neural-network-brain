@@ -47,13 +47,14 @@ public class NeuralWeb
 			}
 
 		/**
-		 * This method can be used to get
+		 * This method can be used to get a {@link Triggerable} brain input. The
+		 * first input is numbered 0.
 		 * 
 		 * @param inputNumber
 		 *            - The index for the input that you would like to link to.
-		 * @return - <div>The {@link Triggerable} brain input at the specified
-		 *         index. </div> <code>null</code> if the inputNumber is
-		 *         negative or
+		 * @return - The {@link Triggerable} brain input at the specified index.
+		 *         <code>null</code> if the inputNumber is negative or => the
+		 *         number of inputs.
 		 */
 		public final Triggerable getBrainInput(int inputNumber)
 			{
@@ -62,7 +63,7 @@ public class NeuralWeb
 				else
 					return null;
 			}
-		
+
 		public final void triggerBrainInput(int inputNumber)
 			{
 				if (inputNumber < numInputs)
