@@ -63,6 +63,8 @@ public class NeuralWebEditor extends RenderableObject
 
 		/*---------------------------------------------*/
 
+		//TODO sort out inputs and outputs
+		
 		public NeuralWebEditor()
 			{
 				Cluster startingCluster = new Cluster(400, 250);
@@ -273,6 +275,9 @@ public class NeuralWebEditor extends RenderableObject
 		@Override
 		public void mouseDragged(MouseEvent e)
 			{
+				mouseX = e.getX();
+				mouseY = e.getY();
+
 				if (dragMoveButton.isChecked())
 					{
 						if (structureBeingMoved)
@@ -294,7 +299,21 @@ public class NeuralWebEditor extends RenderableObject
 							}
 					}
 				else if (dragDeleteButton.isChecked())
-					{}
+					{
+						for (int i = 0; i < neurons.size(); i++)
+							if (neurons.get(i).collides(mouseX, mouseY))
+								{
+									neurons.get(i).delete();
+									i--;
+								}
+
+						for (int i = 0; i < clusters.size(); i++)
+							if (clusters.get(i).collides(mouseX, mouseY))
+								{
+									clusters.get(i).delete();
+									i--;
+								}
+					}
 			}
 
 		@Override
@@ -319,6 +338,10 @@ public class NeuralWebEditor extends RenderableObject
 									cluster = selectedCluster;
 								else if (selectedNeuron != null)
 									cluster = selectedNeuron.cluster;
+								else if (clusters.size() > 2)
+									{
+										cluster = clusters.get(2);
+									}
 								else
 									{
 										WindowTools.informationWindow("Error: You cannot add a neuron without a cluster, please select a Neuron or a Cluster.", "Error");
@@ -336,9 +359,20 @@ public class NeuralWebEditor extends RenderableObject
 							{
 								int x = Math.min(Main.canvasWidth - 11, Math.max(10, mouseX));
 								int y = Math.min(Main.canvasHeight - 33, Math.max(33, mouseY));
-								
+
 								clusters.add(new Cluster(x, y));
-								
+
+								redraw = true;
+							}
+						else if (!deleteKey.isActive() && e.getKeyChar() == deleteKey.getText().charAt(0))
+							{
+								if (selectedCluster != null)
+									selectedCluster.delete();
+								else if (selectedNeuron != null)
+									selectedNeuron.delete();
+								else if (selectedConnection != null)
+									selectedConnection.delete();
+
 								redraw = true;
 							}
 					}
@@ -427,6 +461,8 @@ public class NeuralWebEditor extends RenderableObject
 									neurons.remove(i);
 									i--;
 								}
+
+						clusters.remove(this);
 
 						redraw = true;
 					}
@@ -538,7 +574,7 @@ public class NeuralWebEditor extends RenderableObject
 						 */
 						if (source.cluster == destination.cluster && !source.cluster.expanded)
 							return;
-						
+
 						g.setColor(source.cluster.colour);
 						DrawTools.drawArrow(source.getX(), source.getY(), destination.getX(), destination.getY(), g, 2);
 					}
