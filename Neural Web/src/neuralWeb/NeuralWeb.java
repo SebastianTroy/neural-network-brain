@@ -56,7 +56,7 @@ public class NeuralWeb
 		 *         <code>null</code> if the inputNumber is negative or => the
 		 *         number of inputs.
 		 */
-		public final Triggerable getBrainInput(int inputNumber)
+		public final Triggerable getInput(int inputNumber)
 			{
 				if (inputNumber < numInputs)
 					return neurons.get(inputNumber);
@@ -64,7 +64,7 @@ public class NeuralWeb
 					return null;
 			}
 
-		public final void triggerBrainInput(int inputNumber)
+		public final void triggerInput(int inputNumber)
 			{
 				if (inputNumber < numInputs)
 					neurons.get(inputNumber).trigger();

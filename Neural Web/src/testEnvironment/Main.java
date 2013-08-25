@@ -13,7 +13,7 @@ public class Main extends TCode
 				
 				TCode.programName = "Neural Web Demo";
 				TCode.versionNumber = "Pre Alpha: 0.01";
-				TCode.DEBUG = true;
+				//TCode.DEBUG = true;
 				
 				this.begin(mainMenu);
 			}

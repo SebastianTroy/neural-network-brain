@@ -20,7 +20,7 @@ public class Input implements Triggerable
 
 		public Input(NeuralWeb neuralWeb, int connectionIndex)
 			{
-				connection = neuralWeb.getBrainInput(connectionIndex);
+				connection = neuralWeb.getInput(connectionIndex);
 				if (connection == null)
 					System.out.println("NULL CONNECTION AT INPUT: index = " + connectionIndex);
 			}
@@ -39,7 +39,7 @@ public class Input implements Triggerable
 
 		public final void setConnection(NeuralWeb neuralWeb, int connectionIndex)
 			{
-				connection = neuralWeb.getBrainInput(connectionIndex);
+				connection = neuralWeb.getInput(connectionIndex);
 				if (connection == null)
 					System.out.println("NULL CONNECTION AT INPUT: index = " + connectionIndex);
 			}
